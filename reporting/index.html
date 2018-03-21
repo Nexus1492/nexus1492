@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="script.js"></script>
+    <title>NEXUS1492 Reporting Tool</title>
+  </head>
+  <body>
+    <div id="header">
+      <h1>NEXUS1492 Reporting Tool</h1>
+      <form>
+        <h4>Diagram options:</h4>
+        <label class='enabled'>
+          Site:
+          <select id='site_selector' onchange="switchInput(1)"></select>
+        </label>
+        <label class='enabled'>
+          Type:
+          <select id='type_selector' onchange="switchInput(1)">
+            <option value="spu">Sherds per unit</option>
+            <option value="vpft">Values per find type</option>
+            <option value="cross">Cross Table</option>
+            <option value="hm">Heatmap</option>
+          </select>
+        </label>
+        <label id='attr_chooser' class='disabled'>
+          Attribute:
+          <select id='attr_selector' onchange="switchInput(0)"></select>
+        </label>
+        <label id='attr_chooser2' class='disabled'>
+          second Attribute:
+          <select id='attr_selector2' onchange="switchInput(0)"></select>
+        </label>
+        <label id='zone_chooser' class='disabled'>
+          Zone:
+          <select id='zone_selector' onchange="switchInput(3)"></select>
+        </label>
+
+        <button type="button" onclick="createCharts()">Create Diagrams</button>
+      </form>
+    </div>
+    <div class='container'>
+      <div id="histogram" class="hiddenHistogram">
+        <h2>Histogram</h2>
+        <svg id="hist"></svg>
+        <button type="button" class="saveBtn" id="saveHist" onclick="saveAsImg('hist')">Save as png</button>
+        <button type="button" class="saveBtn" id="saveHist" onclick="saveAsSvg('hist')">Save as svg</button>
+      </div>
+      <div  id="piechart" class="hiddenPie">
+        <h2>Piechart</h2>
+        <svg id="pie"></svg>
+        <button type="button" class="saveBtn" id="savePie" onclick="saveAsImg('pie')">Save as png</button>
+        <button type="button" class="saveBtn" id="savePie" onclick="saveAsSvg('pie')">Save as svg</button>
+      </div>
+      <div id="table" style="display:none">
+        <h2>Data</h2>
+        <table id="tbl" style="width:100%">
+          <tr><th>Name</th><th>Count</th><th>Percentage</th></tr>
+        </table>
+      </div>
+      <div id="cross_table" style="display:none">
+        <h2>Cross Table</h2>
+        <table id="ctbl" style="width:100%">
+          <tr><th>Name</th><th>Count</th><th>Percentage</th></tr>
+        </table><br>
+      </div>
+      <div id="histogram" class="hiddenHistogram">
+        <h2>Heatmap</h2>
+
+      </div>
+      <div id="data_selectors" style="display:none">
+      <div id="selector" style="width:49%; display:none; float:left;">
+      <fieldset id="a1">
+            <legend id="legend_a1"></legend>
+          </fieldset>
+    </div>
+        <div id="selector2" style="width:49%; display:none; float:right;">
+          <fieldset id="a2">
+          <legend id="legend_a1"></legend>
+          </fieldset>
+        </div><br><button type="button" onclick="applyUserSelection()">Apply changes</button>
+      </div>
+    </div>
+  </body>
+</html>
