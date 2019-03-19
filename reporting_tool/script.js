@@ -2,8 +2,9 @@ var sites;
 var findAttributes;
 var siteSel, typeSel, attrSel, attrSel2;
 var color = d3.scaleOrdinal(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
-var APIpath = "http://132.230.224.161/API/api.php?";
+var APIpath = window.location.origin + "/reporting/api.php?";
 var storedData;
+var csvData;
 
 window.onload = function() {
     siteSel = document.getElementById("site_selector");
@@ -168,6 +169,8 @@ function drawTable(data) {
   while (table.rows.length > 1) {
             table.deleteRow(1);
   }
+  csvData = [];
+  csvData.push(['Name', 'Count', 'Percentage'])
   data.forEach(function(d) {
     var row = table.insertRow(-1);
     var cell1 = row.insertCell(0);
@@ -176,6 +179,7 @@ function drawTable(data) {
     cell1.innerHTML = d.name;
     cell2.innerHTML = d.count;
     cell3.innerHTML = d.percentage;
+    csvData.push([d.name, d.count, d.percentage]);
   });
 }
 
@@ -223,7 +227,6 @@ function createDataSelector(sel_name, name, values) {
 
 }
 
-
 function drawCrossTable(data){
     a1 = new Set();
     a2 = new Set();
@@ -253,6 +256,8 @@ function updateCrossTable() {
     while (table.rows.length > 0) {
 	table.deleteRow(0);
     }
+    //table Header
+    let line = [""]
     var row = table.insertRow(0);
     var cell = row.insertCell(0);
     var th = document.createElement('th');
@@ -265,31 +270,39 @@ function updateCrossTable() {
 	    var th = document.createElement('th');
 	    cell.parentNode.replaceChild(th, cell);
 	    if (elm.id != "nonsel") {
-		th.innerHTML = elm.id;
+		    th.innerHTML = elm.id;
+		    line.push(elm.id);
 	    } else {
-		th.innerHTML = document.getElementById("a2_nonsel_in").value;
+		    th.innerHTML = document.getElementById("a2_nonsel_in").value;
+		    line.push(document.getElementById("a2_nonsel_in").value)
 	    }
 	} else if (elm.type == "checkbox" && elm.checked == false && elm.id != "nonsel") {
 	    a2_nonsel.push(elm.id)
 	}
     }
+    csvData = [line];
 
     for (let elm of document.getElementById("a1").getElementsByTagName('input')) {
-	if (elm.type == "checkbox" && elm.checked == false && elm.id != "nonsel") {
-	    a1_nonsel.push(elm.id)
-	}
+	    if (elm.type == "checkbox" && elm.checked == false && elm.id != "nonsel") {
+	        a1_nonsel.push(elm.id)
+	    }
     }
+    // Content
     for (let elm_a1 of document.getElementById("a1").getElementsByTagName('input')) {
 	if(elm_a1.type == "checkbox" && elm_a1.checked == true) {
+	    line = [];
 	    var row = table.insertRow(-1);
 	    cell = row.insertCell(0);
 
 	    var th = document.createElement('th');
 	    cell.parentNode.replaceChild(th, cell);
 	    if (elm_a1.id != "nonsel") {
-		th.innerHTML = elm_a1.id;
+		    th.innerHTML = elm_a1.id;
+		    line.push(elm_a1.id);
 	    } else {
-		th.innerHTML = document.getElementById("a1_nonsel_in").value;
+		    th.innerHTML = document.getElementById("a1_nonsel_in").value;
+		    line.push(document.getElementById("a1_nonsel_in").value);
+		    
 	    }
 
 	    for (let elm_a2 of document.getElementById("a2").getElementsByTagName('input')) {
@@ -317,6 +330,7 @@ function updateCrossTable() {
 			    }
 			}
 		    }
+		    line.push(count);
 		    if (count > 0) {
 			cell.innerHTML = count;
 		    } else {
@@ -324,35 +338,37 @@ function updateCrossTable() {
 		    }
 		}
 	    }
+	    csvData.push(line);
 	}
     }
 }
 
 function drawHeatMap(data) {
-    d3.select("#heatmap").selectAll("*").remove();
+    d3.select("#heatmap_draw").selectAll("*").remove();
     data.forEach(function(d) {
-	d.row = ((d.X1*10)+(d.X2));
-	d.col = ((d.Y1*10)+(d.Y2));
+        d.row = ((d.X1*10)+(d.X2));
+        d.col = ((d.Y1*10)+(d.Y2));
     });
     var gridSize = 10,
-	h = gridSize-2,
-	w = gridSize-2,
-	rectPadding = 6;
+        h = gridSize-2,
+        w = gridSize-2,
+        rectPadding = 6;
 
-    var colorLow = 'green', colorMed = 'yellow', colorHigh = 'red';
+    var colorLow = 'green', colorMed = 'yellow', colorHigh = 'red', colorVeryHigh = 'blue';
 
     var margin = {top: 20, right: 20, bottom: 20, left: 20},
-	width = 850 - margin.left - margin.right,
-	height = 850 - margin.top - margin.bottom;
+        width = 850 - margin.left - margin.right,
+        height = 850 - margin.top - margin.bottom;
 
     var colorScale = d3.scaleLinear()
-        .domain([0, 300, 600])
-        .range([colorLow, colorMed, colorHigh]);
+        .domain([0, 10, 20, 50])
+        .range([colorLow, colorMed, colorHigh, colorVeryHigh]);
 
     var svg = d3.select("#heatmap").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-	.append("g")
+        .attr("id", "hm")
+        .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // Define the div for the tooltip
@@ -364,7 +380,7 @@ function drawHeatMap(data) {
     var heatMap = svg.selectAll(".heatmap");
 
     heatMap.data(pairs(100, 100))
-	.enter().append("svg:rect")
+        .enter().append("svg:rect")
         .attr("x", function(d) { return d.row * w; })
         .attr("y", function(d) { return d.col * h; })
         .attr("width", function(d) { return w; })
@@ -374,7 +390,7 @@ function drawHeatMap(data) {
         .style("stroke", '#777');
 
     heatMap.data(pairs(10, 10))
-	.enter().append("svg:rect")
+        .enter().append("svg:rect")
         .attr("x", function(d) { return d.row * w*10; })
         .attr("y", function(d) { return d.col * h*10; })
         .attr("width", function(d) { return w*10; })
@@ -384,14 +400,23 @@ function drawHeatMap(data) {
         .style("stroke", '#000');
 
     heatMap.data(data)
-	.enter().append("svg:rect")
+        .enter().append("svg:rect")
         .attr("x", function(d) { return d.row * w; })
         .attr("y", function(d) { return d.col * h; })
         .attr("width", function(d) { return w; })
         .attr("height", function(d) { return h; })
-        .style("fill", function(d) { return colorScale(d.CNT); })
+    //        .style("fill", function(d) { return colorScale(d.CNT); })
+        .style("fill", function(d) { return colorScale(calcCnt(d.numbers)); })
         .append("svg:title")
-        .text(function(d) { return d.zone + "-" + d.sector + "-" + d.square + ": " + d.CNT; });
+        .text(function(d) { return d.zone + "-" + d.sector + "-" + d.square + ": " + calcCnt(d.numbers); });
+}
+
+function calcCnt(jsonObj) {
+    sum = 0;
+    for(var x in jsonObj) {
+        sum += 1;
+    }
+    return sum;
 }
 
 function applyUserSelection() {
@@ -440,7 +465,7 @@ function filterData() {
 
 function createCharts() {
   var data;
-  var siteID = sites.find(x => x.code === siteSel.value).id;
+  var siteID = siteSel.value; //sites.find(x => x.code === siteSel.value).id;
   if (typeSel.value === "spu") {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -552,7 +577,7 @@ function switchType(newType) {
 
 function updateZones() {
     // TODO get this thing to work on reload
-    var siteID = sites.find(x => x.code === siteSel.value).id;
+    var siteID = siteSel.value; //sites.find(x => x.code === siteSel.value).id;
     document.getElementById('zone_selector').options.length = 0
 
     var xhttp = new XMLHttpRequest();
@@ -630,6 +655,24 @@ function saveAsSvg(node){
   a.parentNode.removeChild(a);
 }
 
+function downloadTable() {
+    let lines = [];
+    for (let line of csvData) {
+        lines.push('"' + line.join('","') + '"');
+    }
+    let csv = lines.join("\n");
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(csv));
+    element.setAttribute('download', 'data.csv');
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
+
 function wrap(text, width, xOffset) {
     text.each(function() {
 		var text = d3.select(this),
@@ -682,9 +725,9 @@ function up(node) {
 function pairs(max_i, max_j) {
     var res = [];
     for (var i = 0; i < max_i; i++) {
-	for (var j = 0; j < max_j; j++) {
-	    res.push({col:i, row:j});
-	}
+        for (var j = 0; j < max_j; j++) {
+            res.push({col:i, row:j});
+        }
     }
     return res;
 }

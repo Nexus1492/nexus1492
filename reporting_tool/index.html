@@ -57,19 +57,23 @@
       </div>
       <div id="table" style="display:none">
         <h2>Data</h2>
+        <button type="button" class="saveBtn" id="saveCSV" onclick="downloadTable()">Download Data as CSV</button><br>
         <table id="tbl" style="width:100%">
           <tr><th>Name</th><th>Count</th><th>Percentage</th></tr>
         </table>
+        
       </div>
       <div id="cross_table" style="display:none">
         <h2>Cross Table</h2>
+        <button type="button" class="saveBtn" id="saveCSV" onclick="downloadTable()">Download Data as CSV</button><br>
         <table id="ctbl" style="width:100%">
           <tr><th>Name</th><th>Count</th><th>Percentage</th></tr>
         </table><br>
       </div>
-      <div id="histogram" class="hiddenHistogram">
+      <div id="heatmap" class="hiddenHistogram">
         <h2>Heatmap</h2>
-
+        <button type="button" class="saveBtn" id="savePie" onclick="saveAsSvg('hm')">Save as svg</button>
+        <div id="heatmap_draw"></div>
       </div>
       <div id="data_selectors" style="display:none">
       <div id="selector" style="width:49%; display:none; float:left;">

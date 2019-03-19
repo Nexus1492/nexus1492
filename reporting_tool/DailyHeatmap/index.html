@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="script.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+      $( function() {
+        $.datepicker.setDefaults(
+          $.extend(
+            {'dateFormat':'yy-mm-dd'}
+          )
+        );
+        $( "#datepicker1" ).datepicker();
+        $( "#datepicker2" ).datepicker();
+      } );
+    </script>
+    <title>NEXUS1492 Reporting Tool</title>
+  </head>
+  <body>
+    <div id="header">
+      <h1>NEXUS1492 Reporting Tool</h1>
+      <form>
+        <h4>Heatmap options:</h4>
+        <label class='enabled'>
+          Site:
+          <select id='site_selector' onchange="switchInput(1)"><option>pick Site</option></select>
+        </label>
+        <label id='zone_chooser'>
+          Zone:
+          <select id='zone_selector' onchange="switchInput(3)"></select>
+        </label>
+        <label>
+          Start Date:
+          <input type="text" id="datepicker1">
+          </select>
+        </label>
+        <label>
+          End Date:
+          <input type="text" id="datepicker2">
+        </label>
+        <button type="button" onclick="createCharts()">Create Heat Map</button>
+      </form>
+    </div>
+    <div class='container'>
+      <div id="heatmap"></div>
+  </body>
+</html>
