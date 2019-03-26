@@ -333,10 +333,12 @@ def strip_dict(data, strip=default_strip):
 
 @click.option('--URL', default=default_url, help='URL of the web frontend to load the configuration from.')
 @click.option('--use_local', is_flag=True, help='Use the local configuration')
+@click.option('--logging_file', default=2, help='logging level for logging to file')
+@click.option('--logging_stdout', default=2, help='logging level for logging to standard out')
 @click.option('--update_local', is_flag=True, help='Update the local configuration and exit.', callback=update_local)
 @click.group()
-def cli(url, use_local, update_local):
-    state['logging'] = Logging(2, 2)
+def cli(url, use_local, logging_file, logging_stdout, update_local):
+    state['logging'] = Logging(logging_stdout, logging_file)
     state['use_local'] = use_local
     state['config_url'] = url
 
