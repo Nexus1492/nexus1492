@@ -1,0 +1,1928 @@
+{
+    "find": {
+        "order": {
+            "1": "id",
+            "2": "sherd_nr",
+            "3": "layer_id",
+            "4": "sherd_type",
+            "5": "wall_thickness",
+            "6": "JSON/attribute_values",
+            "7": "rim_diameter",
+            "8": "rim_percentage",
+            "9": "remarks",
+            "10": "source_key"
+        },
+        "codebook": [
+            {
+                "code": "1",
+                "attribute_id": "1",
+                "id": "1"
+            },
+            {
+                "code": "2",
+                "attribute_id": "1",
+                "id": "2"
+            },
+            {
+                "code": "3",
+                "attribute_id": "1",
+                "id": "3"
+            },
+            {
+                "code": "4",
+                "attribute_id": "1",
+                "id": "4"
+            },
+            {
+                "code": "5",
+                "attribute_id": "1",
+                "id": "5"
+            },
+            {
+                "code": "6",
+                "attribute_id": "1",
+                "id": "6"
+            },
+            {
+                "code": "7",
+                "attribute_id": "1",
+                "id": "7"
+            },
+            {
+                "code": "8",
+                "attribute_id": "1",
+                "id": "8"
+            },
+            {
+                "code": "9",
+                "attribute_id": "1",
+                "id": "9"
+            },
+            {
+                "code": "10",
+                "attribute_id": "1",
+                "id": "10"
+            },
+            {
+                "code": "11",
+                "attribute_id": "1",
+                "id": "11"
+            },
+            {
+                "code": "16",
+                "attribute_id": "2",
+                "id": "16"
+            },
+            {
+                "code": "17",
+                "attribute_id": "2",
+                "id": "17"
+            },
+            {
+                "code": "18",
+                "attribute_id": "2",
+                "id": "18"
+            },
+            {
+                "code": "19",
+                "attribute_id": "2",
+                "id": "19"
+            },
+            {
+                "code": "20",
+                "attribute_id": "2",
+                "id": "20"
+            },
+            {
+                "code": "21",
+                "attribute_id": "2",
+                "id": "21"
+            },
+            {
+                "code": "22",
+                "attribute_id": "2",
+                "id": "22"
+            },
+            {
+                "code": "23",
+                "attribute_id": "2",
+                "id": "23"
+            },
+            {
+                "code": "24",
+                "attribute_id": "2",
+                "id": "24"
+            },
+            {
+                "code": "25",
+                "attribute_id": "2",
+                "id": "25"
+            },
+            {
+                "code": "26",
+                "attribute_id": "2",
+                "id": "26"
+            },
+            {
+                "code": "27",
+                "attribute_id": "2",
+                "id": "27"
+            },
+            {
+                "code": "28",
+                "attribute_id": "2",
+                "id": "28"
+            },
+            {
+                "code": "29",
+                "attribute_id": "2",
+                "id": "29"
+            },
+            {
+                "code": "30",
+                "attribute_id": "2",
+                "id": "30"
+            },
+            {
+                "code": "31",
+                "attribute_id": "2",
+                "id": "31"
+            },
+            {
+                "code": "32",
+                "attribute_id": "2",
+                "id": "32"
+            },
+            {
+                "code": "33",
+                "attribute_id": "2",
+                "id": "33"
+            },
+            {
+                "code": "41",
+                "attribute_id": "3",
+                "id": "41"
+            },
+            {
+                "code": "42",
+                "attribute_id": "3",
+                "id": "42"
+            },
+            {
+                "code": "43",
+                "attribute_id": "3",
+                "id": "43"
+            },
+            {
+                "code": "44",
+                "attribute_id": "3",
+                "id": "44"
+            },
+            {
+                "code": "45",
+                "attribute_id": "3",
+                "id": "45"
+            },
+            {
+                "code": "46",
+                "attribute_id": "3",
+                "id": "46"
+            },
+            {
+                "code": "47",
+                "attribute_id": "3",
+                "id": "47"
+            },
+            {
+                "code": "48",
+                "attribute_id": "3",
+                "id": "48"
+            },
+            {
+                "code": "49",
+                "attribute_id": "3",
+                "id": "49"
+            },
+            {
+                "code": "50",
+                "attribute_id": "3",
+                "id": "50"
+            },
+            {
+                "code": "51",
+                "attribute_id": "3",
+                "id": "51"
+            },
+            {
+                "code": "52",
+                "attribute_id": "3",
+                "id": "52"
+            },
+            {
+                "code": "53",
+                "attribute_id": "3",
+                "id": "53"
+            },
+            {
+                "code": "54",
+                "attribute_id": "3",
+                "id": "54"
+            },
+            {
+                "code": "55",
+                "attribute_id": "3",
+                "id": "55"
+            },
+            {
+                "code": "56",
+                "attribute_id": "3",
+                "id": "56"
+            },
+            {
+                "code": "57",
+                "attribute_id": "3",
+                "id": "57"
+            },
+            {
+                "code": "58",
+                "attribute_id": "3",
+                "id": "58"
+            },
+            {
+                "code": "59",
+                "attribute_id": "3",
+                "id": "59"
+            },
+            {
+                "code": "60",
+                "attribute_id": "3",
+                "id": "60"
+            },
+            {
+                "code": "61",
+                "attribute_id": "3",
+                "id": "61"
+            },
+            {
+                "code": "62",
+                "attribute_id": "3",
+                "id": "62"
+            },
+            {
+                "code": "63",
+                "attribute_id": "3",
+                "id": "63"
+            },
+            {
+                "code": "64",
+                "attribute_id": "3",
+                "id": "64"
+            },
+            {
+                "code": "65",
+                "attribute_id": "3",
+                "id": "65"
+            },
+            {
+                "code": "66",
+                "attribute_id": "3",
+                "id": "66"
+            },
+            {
+                "code": "81",
+                "attribute_id": "4",
+                "id": "81"
+            },
+            {
+                "code": "82",
+                "attribute_id": "4",
+                "id": "82"
+            },
+            {
+                "code": "83",
+                "attribute_id": "4",
+                "id": "83"
+            },
+            {
+                "code": "84",
+                "attribute_id": "4",
+                "id": "84"
+            },
+            {
+                "code": "85",
+                "attribute_id": "4",
+                "id": "85"
+            },
+            {
+                "code": "86",
+                "attribute_id": "4",
+                "id": "86"
+            },
+            {
+                "code": "87",
+                "attribute_id": "4",
+                "id": "87"
+            },
+            {
+                "code": "91",
+                "attribute_id": "5",
+                "id": "91"
+            },
+            {
+                "code": "92",
+                "attribute_id": "5",
+                "id": "92"
+            },
+            {
+                "code": "93",
+                "attribute_id": "5",
+                "id": "93"
+            },
+            {
+                "code": "94",
+                "attribute_id": "5",
+                "id": "94"
+            },
+            {
+                "code": "95",
+                "attribute_id": "5",
+                "id": "95"
+            },
+            {
+                "code": "96",
+                "attribute_id": "5",
+                "id": "96"
+            },
+            {
+                "code": "97",
+                "attribute_id": "5",
+                "id": "97"
+            },
+            {
+                "code": "98",
+                "attribute_id": "5",
+                "id": "98"
+            },
+            {
+                "code": "99",
+                "attribute_id": "5",
+                "id": "99"
+            },
+            {
+                "code": "100",
+                "attribute_id": "5",
+                "id": "100"
+            },
+            {
+                "code": "101",
+                "attribute_id": "5",
+                "id": "101"
+            },
+            {
+                "code": "111",
+                "attribute_id": "6",
+                "id": "111"
+            },
+            {
+                "code": "112",
+                "attribute_id": "6",
+                "id": "112"
+            },
+            {
+                "code": "113",
+                "attribute_id": "6",
+                "id": "113"
+            },
+            {
+                "code": "114",
+                "attribute_id": "6",
+                "id": "114"
+            },
+            {
+                "code": "115",
+                "attribute_id": "6",
+                "id": "115"
+            },
+            {
+                "code": "116",
+                "attribute_id": "6",
+                "id": "116"
+            },
+            {
+                "code": "117",
+                "attribute_id": "6",
+                "id": "117"
+            },
+            {
+                "code": "118",
+                "attribute_id": "6",
+                "id": "118"
+            },
+            {
+                "code": "119",
+                "attribute_id": "6",
+                "id": "119"
+            },
+            {
+                "code": "120",
+                "attribute_id": "6",
+                "id": "120"
+            },
+            {
+                "code": "121",
+                "attribute_id": "6",
+                "id": "121"
+            },
+            {
+                "code": "122",
+                "attribute_id": "6",
+                "id": "122"
+            },
+            {
+                "code": "123",
+                "attribute_id": "6",
+                "id": "123"
+            },
+            {
+                "code": "124",
+                "attribute_id": "6",
+                "id": "124"
+            },
+            {
+                "code": "125",
+                "attribute_id": "6",
+                "id": "125"
+            },
+            {
+                "code": "126",
+                "attribute_id": "6",
+                "id": "126"
+            },
+            {
+                "code": "127",
+                "attribute_id": "6",
+                "id": "127"
+            },
+            {
+                "code": "128",
+                "attribute_id": "6",
+                "id": "128"
+            },
+            {
+                "code": "129",
+                "attribute_id": "6",
+                "id": "129"
+            },
+            {
+                "code": "130",
+                "attribute_id": "6",
+                "id": "130"
+            },
+            {
+                "code": "131",
+                "attribute_id": "6",
+                "id": "131"
+            },
+            {
+                "code": "132",
+                "attribute_id": "6",
+                "id": "132"
+            },
+            {
+                "code": "111",
+                "attribute_id": "7",
+                "id": "141"
+            },
+            {
+                "code": "112",
+                "attribute_id": "7",
+                "id": "142"
+            },
+            {
+                "code": "113",
+                "attribute_id": "7",
+                "id": "143"
+            },
+            {
+                "code": "114",
+                "attribute_id": "7",
+                "id": "144"
+            },
+            {
+                "code": "115",
+                "attribute_id": "7",
+                "id": "145"
+            },
+            {
+                "code": "116",
+                "attribute_id": "7",
+                "id": "146"
+            },
+            {
+                "code": "117",
+                "attribute_id": "7",
+                "id": "147"
+            },
+            {
+                "code": "118",
+                "attribute_id": "7",
+                "id": "148"
+            },
+            {
+                "code": "119",
+                "attribute_id": "7",
+                "id": "149"
+            },
+            {
+                "code": "120",
+                "attribute_id": "7",
+                "id": "150"
+            },
+            {
+                "code": "121",
+                "attribute_id": "7",
+                "id": "151"
+            },
+            {
+                "code": "122",
+                "attribute_id": "7",
+                "id": "152"
+            },
+            {
+                "code": "123",
+                "attribute_id": "7",
+                "id": "153"
+            },
+            {
+                "code": "124",
+                "attribute_id": "7",
+                "id": "154"
+            },
+            {
+                "code": "125",
+                "attribute_id": "7",
+                "id": "155"
+            },
+            {
+                "code": "126",
+                "attribute_id": "7",
+                "id": "156"
+            },
+            {
+                "code": "127",
+                "attribute_id": "7",
+                "id": "157"
+            },
+            {
+                "code": "128",
+                "attribute_id": "7",
+                "id": "158"
+            },
+            {
+                "code": "129",
+                "attribute_id": "7",
+                "id": "159"
+            },
+            {
+                "code": "130",
+                "attribute_id": "7",
+                "id": "160"
+            },
+            {
+                "code": "131",
+                "attribute_id": "7",
+                "id": "161"
+            },
+            {
+                "code": "132",
+                "attribute_id": "7",
+                "id": "162"
+            },
+            {
+                "code": "141",
+                "attribute_id": "8",
+                "id": "171"
+            },
+            {
+                "code": "142",
+                "attribute_id": "8",
+                "id": "172"
+            },
+            {
+                "code": "143",
+                "attribute_id": "8",
+                "id": "173"
+            },
+            {
+                "code": "144",
+                "attribute_id": "8",
+                "id": "174"
+            },
+            {
+                "code": "145",
+                "attribute_id": "8",
+                "id": "175"
+            },
+            {
+                "code": "146",
+                "attribute_id": "8",
+                "id": "176"
+            },
+            {
+                "code": "147",
+                "attribute_id": "8",
+                "id": "177"
+            },
+            {
+                "code": "148",
+                "attribute_id": "8",
+                "id": "178"
+            },
+            {
+                "code": "149",
+                "attribute_id": "8",
+                "id": "179"
+            },
+            {
+                "code": "150",
+                "attribute_id": "8",
+                "id": "180"
+            },
+            {
+                "code": "151",
+                "attribute_id": "8",
+                "id": "181"
+            },
+            {
+                "code": "152",
+                "attribute_id": "8",
+                "id": "182"
+            },
+            {
+                "code": "153",
+                "attribute_id": "8",
+                "id": "183"
+            },
+            {
+                "code": "154",
+                "attribute_id": "8",
+                "id": "184"
+            },
+            {
+                "code": "155",
+                "attribute_id": "8",
+                "id": "185"
+            },
+            {
+                "code": "156",
+                "attribute_id": "8",
+                "id": "186"
+            },
+            {
+                "code": "157",
+                "attribute_id": "8",
+                "id": "187"
+            },
+            {
+                "code": "158",
+                "attribute_id": "8",
+                "id": "188"
+            },
+            {
+                "code": "159",
+                "attribute_id": "8",
+                "id": "189"
+            },
+            {
+                "code": "165",
+                "attribute_id": "8",
+                "id": "195"
+            },
+            {
+                "code": "166",
+                "attribute_id": "9",
+                "id": "196"
+            },
+            {
+                "code": "167",
+                "attribute_id": "9",
+                "id": "197"
+            },
+            {
+                "code": "168",
+                "attribute_id": "9",
+                "id": "198"
+            },
+            {
+                "code": "169",
+                "attribute_id": "9",
+                "id": "199"
+            },
+            {
+                "code": "170",
+                "attribute_id": "9",
+                "id": "200"
+            },
+            {
+                "code": "171",
+                "attribute_id": "9",
+                "id": "201"
+            },
+            {
+                "code": "166",
+                "attribute_id": "10",
+                "id": "206"
+            },
+            {
+                "code": "167",
+                "attribute_id": "10",
+                "id": "207"
+            },
+            {
+                "code": "168",
+                "attribute_id": "10",
+                "id": "208"
+            },
+            {
+                "code": "169",
+                "attribute_id": "10",
+                "id": "209"
+            },
+            {
+                "code": "170",
+                "attribute_id": "10",
+                "id": "210"
+            },
+            {
+                "code": "171",
+                "attribute_id": "10",
+                "id": "211"
+            },
+            {
+                "code": "176",
+                "attribute_id": "11",
+                "id": "216"
+            },
+            {
+                "code": "177",
+                "attribute_id": "11",
+                "id": "217"
+            },
+            {
+                "code": "178",
+                "attribute_id": "11",
+                "id": "218"
+            },
+            {
+                "code": "179",
+                "attribute_id": "11",
+                "id": "219"
+            },
+            {
+                "code": "180",
+                "attribute_id": "11",
+                "id": "220"
+            },
+            {
+                "code": "181",
+                "attribute_id": "11",
+                "id": "221"
+            },
+            {
+                "code": "182",
+                "attribute_id": "11",
+                "id": "222"
+            },
+            {
+                "code": "183",
+                "attribute_id": "11",
+                "id": "223"
+            },
+            {
+                "code": "999",
+                "attribute_id": "1",
+                "id": "227"
+            },
+            {
+                "code": "999",
+                "attribute_id": "2",
+                "id": "229"
+            },
+            {
+                "code": "999",
+                "attribute_id": "3",
+                "id": "231"
+            },
+            {
+                "code": "999",
+                "attribute_id": "4",
+                "id": "233"
+            },
+            {
+                "code": "999",
+                "attribute_id": "5",
+                "id": "235"
+            },
+            {
+                "code": "999",
+                "attribute_id": "6",
+                "id": "237"
+            },
+            {
+                "code": "999",
+                "attribute_id": "7",
+                "id": "239"
+            },
+            {
+                "code": "999",
+                "attribute_id": "8",
+                "id": "241"
+            },
+            {
+                "code": "999",
+                "attribute_id": "9",
+                "id": "243"
+            },
+            {
+                "code": "999",
+                "attribute_id": "10",
+                "id": "245"
+            },
+            {
+                "code": "999",
+                "attribute_id": "11",
+                "id": "247"
+            },
+            {
+                "code": "104",
+                "attribute_id": "5",
+                "id": "442"
+            },
+            {
+                "code": "105",
+                "attribute_id": "5",
+                "id": "443"
+            },
+            {
+                "code": "106",
+                "attribute_id": "5",
+                "id": "444"
+            },
+            {
+                "code": "107",
+                "attribute_id": "5",
+                "id": "445"
+            },
+            {
+                "code": "922",
+                "attribute_id": "5",
+                "id": "446"
+            },
+            {
+                "code": "921",
+                "attribute_id": "5",
+                "id": "447"
+            },
+            {
+                "code": "925",
+                "attribute_id": "5",
+                "id": "448"
+            },
+            {
+                "code": "924",
+                "attribute_id": "5",
+                "id": "449"
+            },
+            {
+                "code": "923",
+                "attribute_id": "5",
+                "id": "450"
+            },
+            {
+                "code": "102",
+                "attribute_id": "5",
+                "id": "451"
+            },
+            {
+                "code": "1001",
+                "attribute_id": "2",
+                "id": "452"
+            },
+            {
+                "code": "1002",
+                "attribute_id": "2",
+                "id": "453"
+            },
+            {
+                "code": "1003",
+                "attribute_id": "2",
+                "id": "454"
+            },
+            {
+                "code": "1004",
+                "attribute_id": "2",
+                "id": "455"
+            },
+            {
+                "code": "1005",
+                "attribute_id": "2",
+                "id": "456"
+            },
+            {
+                "code": "1006",
+                "attribute_id": "2",
+                "id": "457"
+            },
+            {
+                "code": "1011",
+                "attribute_id": "2",
+                "id": "458"
+            },
+            {
+                "code": "1012",
+                "attribute_id": "2",
+                "id": "459"
+            },
+            {
+                "code": "1013",
+                "attribute_id": "2",
+                "id": "460"
+            },
+            {
+                "code": "1014",
+                "attribute_id": "2",
+                "id": "461"
+            },
+            {
+                "code": "1015",
+                "attribute_id": "2",
+                "id": "462"
+            },
+            {
+                "code": "1016",
+                "attribute_id": "2",
+                "id": "463"
+            },
+            {
+                "code": "1017",
+                "attribute_id": "2",
+                "id": "465"
+            },
+            {
+                "code": "1018",
+                "attribute_id": "2",
+                "id": "466"
+            },
+            {
+                "code": "1010",
+                "attribute_id": "2",
+                "id": "467"
+            },
+            {
+                "code": "1019",
+                "attribute_id": "2",
+                "id": "469"
+            },
+            {
+                "code": "1020",
+                "attribute_id": "2",
+                "id": "470"
+            },
+            {
+                "code": "1021",
+                "attribute_id": "2",
+                "id": "471"
+            },
+            {
+                "code": "1022",
+                "attribute_id": "2",
+                "id": "473"
+            },
+            {
+                "code": "1023",
+                "attribute_id": "2",
+                "id": "474"
+            },
+            {
+                "code": "1024",
+                "attribute_id": "2",
+                "id": "475"
+            },
+            {
+                "code": "1025",
+                "attribute_id": "2",
+                "id": "476"
+            },
+            {
+                "code": "1026",
+                "attribute_id": "2",
+                "id": "477"
+            },
+            {
+                "code": "1032",
+                "attribute_id": "1",
+                "id": "478"
+            },
+            {
+                "code": "1034",
+                "attribute_id": "2",
+                "id": "479"
+            },
+            {
+                "code": "1033",
+                "attribute_id": "2",
+                "id": "480"
+            },
+            {
+                "code": "1035",
+                "attribute_id": "2",
+                "id": "481"
+            },
+            {
+                "code": "1028",
+                "attribute_id": "2",
+                "id": "482"
+            },
+            {
+                "code": "1029",
+                "attribute_id": "1",
+                "id": "483"
+            },
+            {
+                "code": "1030",
+                "attribute_id": "2",
+                "id": "484"
+            },
+            {
+                "code": "1031",
+                "attribute_id": "2",
+                "id": "485"
+            },
+            {
+                "code": "1044",
+                "attribute_id": "2",
+                "id": "486"
+            },
+            {
+                "code": "1036",
+                "attribute_id": "2",
+                "id": "487"
+            },
+            {
+                "code": "1037",
+                "attribute_id": "2",
+                "id": "488"
+            },
+            {
+                "code": "1038",
+                "attribute_id": "2",
+                "id": "489"
+            },
+            {
+                "code": "1039",
+                "attribute_id": "2",
+                "id": "490"
+            },
+            {
+                "code": "1040",
+                "attribute_id": "2",
+                "id": "491"
+            },
+            {
+                "code": "1041",
+                "attribute_id": "1",
+                "id": "492"
+            },
+            {
+                "code": "1042",
+                "attribute_id": "2",
+                "id": "493"
+            },
+            {
+                "code": "1043",
+                "attribute_id": "2",
+                "id": "494"
+            },
+            {
+                "code": "1045",
+                "attribute_id": "2",
+                "id": "495"
+            },
+            {
+                "code": "1047",
+                "attribute_id": "1",
+                "id": "496"
+            },
+            {
+                "code": "1046",
+                "attribute_id": "2",
+                "id": "497"
+            },
+            {
+                "code": "1048",
+                "attribute_id": "2",
+                "id": "498"
+            },
+            {
+                "code": "1049",
+                "attribute_id": "2",
+                "id": "499"
+            },
+            {
+                "code": "1050",
+                "attribute_id": "2",
+                "id": "500"
+            },
+            {
+                "code": "1052",
+                "attribute_id": "2",
+                "id": "502"
+            },
+            {
+                "code": "1051",
+                "attribute_id": "2",
+                "id": "503"
+            },
+            {
+                "code": "1054",
+                "attribute_id": "2",
+                "id": "504"
+            },
+            {
+                "code": "1053",
+                "attribute_id": "2",
+                "id": "505"
+            },
+            {
+                "code": "1055",
+                "attribute_id": "1",
+                "id": "506"
+            },
+            {
+                "code": "1007",
+                "attribute_id": "2",
+                "id": "507"
+            },
+            {
+                "code": "1008",
+                "attribute_id": "2",
+                "id": "508"
+            },
+            {
+                "code": "1009",
+                "attribute_id": "2",
+                "id": "509"
+            },
+            {
+                "code": "133",
+                "attribute_id": "6",
+                "id": "901"
+            },
+            {
+                "code": "134",
+                "attribute_id": "6",
+                "id": "902"
+            },
+            {
+                "code": "135",
+                "attribute_id": "6",
+                "id": "903"
+            },
+            {
+                "code": "136",
+                "attribute_id": "6",
+                "id": "904"
+            },
+            {
+                "code": "133",
+                "attribute_id": "7",
+                "id": "905"
+            },
+            {
+                "code": "134",
+                "attribute_id": "7",
+                "id": "906"
+            },
+            {
+                "code": "135",
+                "attribute_id": "7",
+                "id": "907"
+            },
+            {
+                "code": "136",
+                "attribute_id": "7",
+                "id": "908"
+            },
+            {
+                "code": "190",
+                "attribute_id": "8",
+                "id": "909"
+            },
+            {
+                "code": "191",
+                "attribute_id": "8",
+                "id": "910"
+            },
+            {
+                "code": "192",
+                "attribute_id": "8",
+                "id": "911"
+            },
+            {
+                "code": "193",
+                "attribute_id": "8",
+                "id": "912"
+            },
+            {
+                "code": "194",
+                "attribute_id": "8",
+                "id": "913"
+            }
+        ],
+        "codebook_other": [
+            {
+                "code": "12",
+                "attribute_id": "1",
+                "id": "12"
+            },
+            {
+                "code": "13",
+                "attribute_id": "1",
+                "id": "13"
+            },
+            {
+                "code": "14",
+                "attribute_id": "1",
+                "id": "14"
+            },
+            {
+                "code": "15",
+                "attribute_id": "1",
+                "id": "15"
+            },
+            {
+                "code": "34",
+                "attribute_id": "2",
+                "id": "34"
+            },
+            {
+                "code": "35",
+                "attribute_id": "2",
+                "id": "35"
+            },
+            {
+                "code": "36",
+                "attribute_id": "2",
+                "id": "36"
+            },
+            {
+                "code": "37",
+                "attribute_id": "2",
+                "id": "37"
+            },
+            {
+                "code": "38",
+                "attribute_id": "2",
+                "id": "38"
+            },
+            {
+                "code": "39",
+                "attribute_id": "2",
+                "id": "39"
+            },
+            {
+                "code": "40",
+                "attribute_id": "2",
+                "id": "40"
+            },
+            {
+                "code": "67",
+                "attribute_id": "3",
+                "id": "67"
+            },
+            {
+                "code": "68",
+                "attribute_id": "3",
+                "id": "68"
+            },
+            {
+                "code": "69",
+                "attribute_id": "3",
+                "id": "69"
+            },
+            {
+                "code": "70",
+                "attribute_id": "3",
+                "id": "70"
+            },
+            {
+                "code": "71",
+                "attribute_id": "3",
+                "id": "71"
+            },
+            {
+                "code": "72",
+                "attribute_id": "3",
+                "id": "72"
+            },
+            {
+                "code": "73",
+                "attribute_id": "3",
+                "id": "73"
+            },
+            {
+                "code": "74",
+                "attribute_id": "3",
+                "id": "74"
+            },
+            {
+                "code": "75",
+                "attribute_id": "3",
+                "id": "75"
+            },
+            {
+                "code": "76",
+                "attribute_id": "3",
+                "id": "76"
+            },
+            {
+                "code": "77",
+                "attribute_id": "3",
+                "id": "77"
+            },
+            {
+                "code": "78",
+                "attribute_id": "3",
+                "id": "78"
+            },
+            {
+                "code": "79",
+                "attribute_id": "3",
+                "id": "79"
+            },
+            {
+                "code": "80",
+                "attribute_id": "3",
+                "id": "80"
+            },
+            {
+                "code": "88",
+                "attribute_id": "4",
+                "id": "88"
+            },
+            {
+                "code": "89",
+                "attribute_id": "4",
+                "id": "89"
+            },
+            {
+                "code": "90",
+                "attribute_id": "4",
+                "id": "90"
+            },
+            {
+                "code": "102",
+                "attribute_id": "5",
+                "id": "102"
+            },
+            {
+                "code": "103",
+                "attribute_id": "5",
+                "id": "103"
+            },
+            {
+                "code": "104",
+                "attribute_id": "5",
+                "id": "104"
+            },
+            {
+                "code": "105",
+                "attribute_id": "5",
+                "id": "105"
+            },
+            {
+                "code": "106",
+                "attribute_id": "5",
+                "id": "106"
+            },
+            {
+                "code": "107",
+                "attribute_id": "5",
+                "id": "107"
+            },
+            {
+                "code": "108",
+                "attribute_id": "5",
+                "id": "108"
+            },
+            {
+                "code": "109",
+                "attribute_id": "5",
+                "id": "109"
+            },
+            {
+                "code": "110",
+                "attribute_id": "5",
+                "id": "110"
+            },
+            {
+                "code": "133",
+                "attribute_id": "6",
+                "id": "133"
+            },
+            {
+                "code": "134",
+                "attribute_id": "6",
+                "id": "134"
+            },
+            {
+                "code": "135",
+                "attribute_id": "6",
+                "id": "135"
+            },
+            {
+                "code": "136",
+                "attribute_id": "6",
+                "id": "136"
+            },
+            {
+                "code": "137",
+                "attribute_id": "6",
+                "id": "137"
+            },
+            {
+                "code": "138",
+                "attribute_id": "6",
+                "id": "138"
+            },
+            {
+                "code": "139",
+                "attribute_id": "6",
+                "id": "139"
+            },
+            {
+                "code": "140",
+                "attribute_id": "6",
+                "id": "140"
+            },
+            {
+                "code": "133",
+                "attribute_id": "7",
+                "id": "163"
+            },
+            {
+                "code": "134",
+                "attribute_id": "7",
+                "id": "164"
+            },
+            {
+                "code": "135",
+                "attribute_id": "7",
+                "id": "165"
+            },
+            {
+                "code": "136",
+                "attribute_id": "7",
+                "id": "166"
+            },
+            {
+                "code": "137",
+                "attribute_id": "7",
+                "id": "167"
+            },
+            {
+                "code": "138",
+                "attribute_id": "7",
+                "id": "168"
+            },
+            {
+                "code": "139",
+                "attribute_id": "7",
+                "id": "169"
+            },
+            {
+                "code": "140",
+                "attribute_id": "7",
+                "id": "170"
+            },
+            {
+                "code": "160",
+                "attribute_id": "8",
+                "id": "190"
+            },
+            {
+                "code": "161",
+                "attribute_id": "8",
+                "id": "191"
+            },
+            {
+                "code": "162",
+                "attribute_id": "8",
+                "id": "192"
+            },
+            {
+                "code": "163",
+                "attribute_id": "8",
+                "id": "193"
+            },
+            {
+                "code": "164",
+                "attribute_id": "8",
+                "id": "194"
+            },
+            {
+                "code": "172",
+                "attribute_id": "9",
+                "id": "202"
+            },
+            {
+                "code": "173",
+                "attribute_id": "9",
+                "id": "203"
+            },
+            {
+                "code": "174",
+                "attribute_id": "9",
+                "id": "204"
+            },
+            {
+                "code": "175",
+                "attribute_id": "9",
+                "id": "205"
+            },
+            {
+                "code": "172",
+                "attribute_id": "10",
+                "id": "212"
+            },
+            {
+                "code": "173",
+                "attribute_id": "10",
+                "id": "213"
+            },
+            {
+                "code": "174",
+                "attribute_id": "10",
+                "id": "214"
+            },
+            {
+                "code": "175",
+                "attribute_id": "10",
+                "id": "215"
+            },
+            {
+                "code": "184",
+                "attribute_id": "11",
+                "id": "224"
+            },
+            {
+                "code": "185",
+                "attribute_id": "11",
+                "id": "225"
+            }
+        ],
+        "attribute_values": [
+            {
+                "name": "Vessel shape",
+                "id": "1"
+            },
+            {
+                "name": "Wall profile",
+                "id": "2"
+            },
+            {
+                "name": "Lip shape",
+                "id": "3"
+            },
+            {
+                "name": "Rim profile",
+                "id": "4"
+            },
+            {
+                "name": "Decoration",
+                "id": "5"
+            },
+            {
+                "name": "Color inside",
+                "id": "6"
+            },
+            {
+                "name": "Color outside",
+                "id": "7"
+            },
+            {
+                "name": "Firing color",
+                "id": "8"
+            },
+            {
+                "name": "Surface finishing inside",
+                "id": "9"
+            },
+            {
+                "name": "Surface finishing outside",
+                "id": "10"
+            },
+            {
+                "name": "Slip Position",
+                "id": "11"
+            }
+        ]
+    },
+    "layer": {
+        "order": {
+            "1": "id",
+            "2": "find_type",
+            "3": "find_number",
+            "4": "zone",
+            "5": "sector",
+            "6": "square",
+            "7": "layer",
+            "8": "unit",
+            "9": "feature",
+            "10": "stratigraphic",
+            "11": "JSON/numbers",
+            "12": "JSON/weights",
+            "13": "JSON/counts",
+            "14": "remarks",
+            "15": "source_key"
+        },
+        "counts": [
+            {
+                "property": "Red slip",
+                "id": "1"
+            },
+            {
+                "property": "White on red",
+                "id": "2"
+            },
+            {
+                "property": "Polychrome",
+                "id": "3"
+            },
+            {
+                "property": "Zoned Crosshatch",
+                "id": "4"
+            },
+            {
+                "property": "Broad",
+                "id": "5"
+            },
+            {
+                "property": "Fine",
+                "id": "6"
+            },
+            {
+                "property": "Anthropomorphic",
+                "id": "7"
+            },
+            {
+                "property": "Geometric",
+                "id": "8"
+            },
+            {
+                "property": "Punctation",
+                "id": "9"
+            },
+            {
+                "property": "Finger Indentation",
+                "id": "10"
+            },
+            {
+                "property": "Nubbin",
+                "id": "11"
+            },
+            {
+                "property": "Applique",
+                "id": "12"
+            },
+            {
+                "property": "Other",
+                "id": "13"
+            },
+            {
+                "property": "Flat",
+                "id": "14"
+            },
+            {
+                "property": "Convex",
+                "id": "15"
+            },
+            {
+                "property": "Concave",
+                "id": "16"
+            },
+            {
+                "property": "Concave high",
+                "id": "17"
+            },
+            {
+                "property": "Other",
+                "id": "19"
+            },
+            {
+                "property": "Handle",
+                "id": "20"
+            },
+            {
+                "property": "Lug",
+                "id": "21"
+            },
+            {
+                "property": "Body Stamp",
+                "id": "22"
+            },
+            {
+                "property": "Spindle whorl",
+                "id": "23"
+            },
+            {
+                "property": "Spout",
+                "id": "24"
+            },
+            {
+                "property": "Tool",
+                "id": "25"
+            },
+            {
+                "property": "Fired clay",
+                "id": "26"
+            },
+            {
+                "property": "Adorno",
+                "id": "27"
+            },
+            {
+                "property": "Straight",
+                "id": "29"
+            },
+            {
+                "property": "Triangular",
+                "id": "30"
+            },
+            {
+                "property": "Overhanging",
+                "id": "31"
+            },
+            {
+                "property": "Flat",
+                "id": "33"
+            },
+            {
+                "property": "Zoomorphic",
+                "id": "35"
+            },
+            {
+                "property": "White slip",
+                "id": "36"
+            },
+            {
+                "property": "Perforation",
+                "id": "37"
+            },
+            {
+                "property": "Applique filet",
+                "id": "38"
+            },
+            {
+                "property": "Incision combined with punctation",
+                "id": "39"
+            },
+            {
+                "property": "Rounded",
+                "id": "40"
+            },
+            {
+                "property": "Legged",
+                "id": "41"
+            },
+            {
+                "property": "Black Paint",
+                "id": "47"
+            },
+            {
+                "property": "Red Paint",
+                "id": "52"
+            },
+            {
+                "property": "Rim points",
+                "id": "53"
+            },
+            {
+                "property": "Footed",
+                "id": "66"
+            },
+            {
+                "property": "Other",
+                "id": "68"
+            },
+            {
+                "property": "Meillacoid",
+                "id": "72"
+            },
+            {
+                "property": "Meillacoid",
+                "id": "72"
+            },
+            {
+                "property": "Ostionoid",
+                "id": "74"
+            },
+            {
+                "property": "Chicoid",
+                "id": "75"
+            },
+            {
+                "property": "Ostionoid and Chicoid",
+                "id": "76"
+            },
+            {
+                "property": "Chicoid and Meillacoid",
+                "id": "77"
+            },
+            {
+                "property": "Ostionoid and Meillacoid",
+                "id": "78"
+            },
+            {
+                "property": "Ostionoid, Chicoid and Meillacoid",
+                "id": "79"
+            }
+        ],
+        "weights": [
+            {
+                "property": "Body",
+                "id": "1"
+            },
+            {
+                "property": "Rim",
+                "id": "2"
+            },
+            {
+                "property": "Base",
+                "id": "3"
+            },
+            {
+                "property": "Griddle",
+                "id": "4"
+            },
+            {
+                "property": "Appendage",
+                "id": "5"
+            },
+            {
+                "property": "Other",
+                "id": "6"
+            }
+        ],
+        "numbers": [
+            {
+                "id": "1",
+                "property": "Body_lt"
+            },
+            {
+                "id": "1",
+                "property": "Body_gt"
+            },
+            {
+                "id": "2",
+                "property": "Rim_lt"
+            },
+            {
+                "id": "2",
+                "property": "Rim_gt"
+            },
+            {
+                "id": "3",
+                "property": "Base_lt"
+            },
+            {
+                "id": "3",
+                "property": "Base_gt"
+            },
+            {
+                "id": "4",
+                "property": "Griddle_lt"
+            },
+            {
+                "id": "4",
+                "property": "Griddle_gt"
+            },
+            {
+                "id": "5",
+                "property": "Appendage_lt"
+            },
+            {
+                "id": "5",
+                "property": "Appendage_gt"
+            },
+            {
+                "id": "6",
+                "property": "Other_lt"
+            },
+            {
+                "id": "6",
+                "property": "Other_gt"
+            }
+        ]
+    }
+}
