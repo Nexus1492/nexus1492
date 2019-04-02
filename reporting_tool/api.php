@@ -384,11 +384,15 @@ function getHeatMapDataD() {
 }
 
 function dbConnection() {
-    // $mysqli = new mysqli('p:localhost', 'user', 'passwd', 'db', NULL, '/var/run/mysqld/mysqld.sock');
-    $mysqli = new mysqli($host='127.0.0.1', $username='root', $passwd='pw', $dbname='COMPLETE_NEXUS_DB', $port=3306);
-	if ($mysqli->connect_errno) {
-        response(503,"Service Unavailable",NULL);
-        exit;
+    global $username, $passwd, $dbname;
+    
+    if (!isset($username)) $username = 'root';
+    if (!isset($passwd))   $passwd   = 'pw';
+    if (!isset($dbname))   $dbname   = 'online_system';
+    $mysqli = new mysqli('127.0.0.1', $username, $passwd, $dbname, 3306);
+    if ($mysqli->connect_errno) {
+      response(503,"Service Unavailable",NULL);
+      exit;
     }
     return $mysqli;
 }
