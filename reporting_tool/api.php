@@ -1,5 +1,4 @@
 <?php
-ini_set('display_errors', 'On');
 header("Content-Type:application/json");
 
 $fun=$_GET['function'];
