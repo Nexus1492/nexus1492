@@ -1,0 +1,5 @@
+1. Download dump of the online database and put it into Docker_reporting/database/databsae.sql
+2. Build the container from the root of the reposetory:
+    $ docker build -t reporting  -f Docker_reporting/Dockerfile .
+3. Run the container (listening on localhost:8080):
+    $ docker run -d -p 8080:80 reporting
