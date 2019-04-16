@@ -12,6 +12,12 @@ window.onload = function() {
     attrSel = document.getElementById("attr_selector");
     attrSel2 = document.getElementById("attr_selector2");
     zoneSel = document.getElementById("zone_selector");
+    
+    $('#type_selector').multiselect({buttonWidth: '200px'});
+    //$('#attr_selector').multiselect({buttonWidth: '200px'});
+    //$('#attr_selector2').multiselect({buttonWidth: '200px'});
+    //$('#zone_selector').multiselect({buttonWidth: '200px'});
+    
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -22,6 +28,12 @@ window.onload = function() {
                 opt.text = d.name;
                 siteSel.add(opt);
             });
+            
+            $('#site_selector').multiselect({
+                enableFiltering: true,
+                buttonWidth: '200px'
+            });
+            //siteSel.value = document.getElementById("excavation-name").innerHTML.split('[').pop().split(']')[0];
         }
     };
     xhttp.open("GET", APIpath + "function=getSites", true);
