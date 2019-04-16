@@ -14,6 +14,7 @@ window.onload = function() {
     zoneSel = document.getElementById("zone_selector");
     
     $('#type_selector').multiselect({buttonWidth: '200px'});
+    // Needs some more adjustments due to further code
     //$('#attr_selector').multiselect({buttonWidth: '200px'});
     //$('#attr_selector2').multiselect({buttonWidth: '200px'});
     //$('#zone_selector').multiselect({buttonWidth: '200px'});
@@ -33,7 +34,8 @@ window.onload = function() {
                 enableFiltering: true,
                 buttonWidth: '200px'
             });
-            //siteSel.value = document.getElementById("excavation-name").innerHTML.split('[').pop().split(']')[0];
+            //somewhat hacky solution to preselect site
+            //$('#site_selector').multiselect('select', document.getElementById("excavation-name").innerHTML.split('[').pop().split(']')[0]);
         }
     };
     xhttp.open("GET", APIpath + "function=getSites", true);
