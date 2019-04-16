@@ -18,7 +18,8 @@ window.onload = function() {
             sites = JSON.parse(xhttp.response).data;
             sites.forEach(function(d) {
                 var opt = document.createElement("option");
-                opt.text = d.code;
+                opt.value = d.code;
+                opt.text = d.name;
                 siteSel.add(opt);
             });
         }
@@ -364,7 +365,7 @@ function drawHeatMap(data) {
         .domain([0, 10, 20, 50])
         .range([colorLow, colorMed, colorHigh, colorVeryHigh]);
 
-    var svg = d3.select("#heatmap").append("svg")
+    var svg = d3.select("#heatmap_draw").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .attr("id", "hm")

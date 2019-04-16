@@ -51,7 +51,7 @@ function getFindAttributes() {
 
 function getSites() {
     $mysqli = dbConnection();
-    $sql = 'SELECT id, code from _excavations';
+    $sql = 'SELECT id, code, name from _excavations';
     if (!$result = $mysqli->query($sql)) {
         response(503,"Service Unavailable", NULL);
         exit;
