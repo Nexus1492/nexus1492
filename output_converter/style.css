@@ -1,0 +1,148 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto+Slab:400,700);
+
+.enabled { display: inline; }
+.disabled {display: none; }
+
+.arc text {
+  font: 10px sans-serif;
+  text-anchor: middle;
+}
+
+.arc path {
+  stroke: #fff;
+}
+.axis {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+polyline {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1;
+}
+
+h1, h2, h4, th, label {
+  font-family: Roboto Slab, serif,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  color: #3F6383;
+}
+
+body {
+  background-color: #EDF3F7;
+}
+
+#tbl, #ctbl {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#tbl td, #tbl th, #ctbl td, #ctbl th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#tbl tr:nth-child(even), #ctbl tr:nth-child(even){background-color: #f2f2f2;}
+
+#tbl tr:hover, #ctbl tr:hover {background-color: #ddd;}
+
+#tbl th, #ctbl th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #3F6383;
+    color: white;
+}
+
+.unitHistogram {
+	width: 100%;
+	float: left;
+	height: 600px;
+	display: block;
+}
+
+.hiddenHistogram{
+	display: none;
+}
+
+.hiddenPie{
+	display: none;
+}
+
+/* very narrow screens*/
+
+@media only screen and (max-width : 750px) {
+	.enabled { display: block; }
+}
+
+/* iPad: */
+@media only screen and (max-width : 1024px) {
+	
+	#header{
+		width: 100%;
+	}
+	
+	.histogram {
+		width: 100%;
+		float: left;
+		height: 600px;
+		style: block;
+	}
+	
+	.piechart {
+		width: 100%;
+		float: right;
+		height: 600px;
+	}
+	
+	#table {
+		width: 100%;
+		clear: both;
+	}
+
+	.saveBtn {
+		display: none;
+	}
+	
+	.container {
+		width: 100%;
+		margin: auto;
+	}	
+}
+
+/* Large screens: */
+@media only screen and (min-width : 1025px) {
+
+	#header{
+		width: 100%;
+	}
+	
+	.histogram {
+		width: 49.5%;
+		float: left;
+		height: 600px;
+		style: block;
+	}
+	
+	.piechart {
+		width: 49.5%;
+		float: right;
+		height: 600px;
+	}
+	
+	#table {
+		width: 100%;
+		clear: both;
+	}
+	
+	.container {
+		width: 100%;
+		margin: auto;
+	}	
+}
