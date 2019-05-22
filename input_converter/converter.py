@@ -37,7 +37,7 @@ def find_separator(path, posible_separators=default_separators, min_num_fields=5
     return result_1, champions[result_1]
 
 
-def convert_data(layer_name, layer_mapping, find_name, find_mapping, site_code, no_header, create_missing, state, separator=None, input_path="./", output_path="./"):
+def convert_data(layer_name, layer_mapping, find_name, find_mapping, site_code, no_header, create_missing, state, separator=None, input_path="./", output_path="./", output_file_name=None):
     config = state['config']
     layer_buffer = io.StringIO()
     find_buffer = io.StringIO()
@@ -50,7 +50,10 @@ def convert_data(layer_name, layer_mapping, find_name, find_mapping, site_code, 
     fnd_to_id, layer_writer = convert_layer_data(layer_name, layer_mapping, layer_buffer, config['layer'], site_code, input_path, no_header, layer_sep)
     convert_find_data(find_name, find_mapping, find_buffer, config['find'], site_code, input_path, fnd_to_id, no_header, find_sep, create_missing, layer_writer, state)
 
-    with ZipFile(output_path + site_code + '.zip', 'w', ZIP_DEFLATED) as zip_file:
+    if output_file_name is None:
+        output_file_name = site_code + '.zip'
+
+    with ZipFile(output_path + output_file_name, 'w', ZIP_DEFLATED) as zip_file:
         zip_file.writestr(site_code + "_layer.csv", layer_buffer.getvalue())
         zip_file.writestr(site_code + "_find.csv", find_buffer.getvalue())
 
