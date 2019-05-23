@@ -1,0 +1,32 @@
+---
+title: "charcoal"
+output: html_document
+---
+
+```{r, echo=FALSE}
+
+temp_fl_charcoal_13 <- read_delim(paste0(source_directory, "finds/charcoal/fl_charcoal_13.csv"), delim=";") %>% 
+  normalize("El Flaco")
+
+temp_fl_charcoal_16 <- read_delim(paste0(source_directory, "finds/charcoal/fl_charcoal_16.csv"), delim=";") %>% 
+  mutate(weight=round(as.numeric(weight), digits = 2)) %>%
+  normalize("El Flaco") 
+
+temp_ll_charcoal <- read_delim(paste0(source_directory, "finds/charcoal/ll_charcoal.csv"), delim=";") %>%
+  normalize("La Luperona") 
+
+
+temp_mor_charcoal <- read_excel(paste0(source_directory, "finds/mor_finds.xls")) %>%
+  normalize() %>%
+  dplyr::select(zone, sector, square, layer, contains("charcoal")) %>%
+  rename(total_weight =  charcoal_g)
+
+
+```
+
+```{r, echo=FALSE}
+flat_charcoal <- bind_rows(temp_fl_charcoal_13, temp_fl_charcoal_16, temp_ll_charcoal, temp_mor_charcoal)  %>%
+  select(-contains("x_")) %>%
+  mutate(material = "charcoal")
+
+```

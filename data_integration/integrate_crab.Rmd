@@ -1,0 +1,41 @@
+---
+title: "crab"
+output: html_document
+---
+
+```{r, echo=FALSE}
+
+temp_fl_crab_14 <- read_excel(paste0(source_directory, "finds/crab/fl_crab_14.xlsx"), col_types = "text") %>% 
+  normalize %>%
+  mutate(site = "El Flaco") %>%
+  rename(fnd = find_number) %>%
+  mutate(number)
+
+
+temp_fl_crab_15 <- read_excel(paste0(source_directory, "finds/crab/fl_crab_15.xlsx"), col_types = "text")  %>% 
+  normalize ("El Flaco")%>%
+  rename(fnd = find_number) %>%
+  mutate(number)
+
+temp_mor_crab <- read_excel(paste0(source_directory, "finds/mor_finds.xls")) %>%
+  normalize() %>%
+  dplyr::select(zone, sector, square, layer, contains("crab")) %>%
+  rename(weight =  crab_g, number = crab_n)
+
+temp_coc_crab <- read_excel(paste0(source_directory, "find_lists/coc_find_list.xls")) %>%
+  normalize("Cocoyer St. Charles") %>%
+  select(site, fnd = feature, contains("layer")) %>%
+  gather(layer, finds, contains("layer")) %>%
+  mutate(layer = gsub("layer_", "", layer)) %>%
+  dplyr::filter(grepl("crab", finds, ignore.case = TRUE)) %>%
+  select(-finds)
+
+```
+
+```{r}
+flat_crab <- bind_rows(temp_fl_crab_14,temp_fl_crab_15, temp_mor_crab, temp_coc_crab)  %>%
+  mutate(material = "crab") %>%
+  select(-contains("_mm"))
+
+```
+

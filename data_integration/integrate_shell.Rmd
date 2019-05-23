@@ -1,0 +1,228 @@
+---
+title: "shell"
+output: html_document
+---
+
+
+```{r, echo=FALSE}
+
+temp_atr_shell <- read_excel(paste0(source_directory, "finds/shell/atr_shell.xlsx"), col_types = "text")  %>% 
+  normalize("Anse Trabaud") %>%
+  rename(total_weight = weight, total_number = number, fnd = find_number)
+
+temp_ca_shell_16_17_18 <- read_excel(paste0(source_directory, "finds/shell/ca_shell_16_17_18.xlsx"), col_types = "text")  %>% 
+  normalize("El Carril", convert_year = TRUE) 
+
+temp_ca_shell_16_17_18_without_o <- temp_ca_shell_16_17_18 %>%
+  select(-starts_with("o")) 
+
+temp_ca_shell_16_17_18_o_values <- temp_ca_shell_16_17_18 %>% 
+  normalize("El Carril", convert_year = TRUE) %>%
+  select(fnd, starts_with("o")) %>%
+  mutate_all(funs(tolower(gsub(" ", "_", . )))) %>%
+  gather(species_column, species,o1,o2,o3,o4,o5,o6) %>%
+  gather(weight_column, weight,o1_weight,o2_weight,o3_weight,o4_weight,o5_weight,o6_weight) %>%
+  gather(mni_column,mni,o1_mni,o2_mni,o3_mni,o4_mni,o5_mni,o6_mni) %>%
+  mutate_all(funs(gsub("_weight",  "", .))) %>%
+  mutate_all(funs(gsub("_mni",  "", .))) %>%
+  dplyr::filter(species_column == weight_column, species_column == mni_column) %>%
+  dplyr::filter(!is.na(species)) %>%
+  group_by(fnd) %>%
+  mutate(mni_column = coalesce(species, "_mni")) %>%
+  mutate(weight_column = coalesce(species, "_weight")) %>%
+  spread(species, weight)
+
+temp_carril_shell_adapted <- left_join(temp_ca_shell_16_17_18_without_o, temp_ca_shell_16_17_18_o_values, by="fnd")
+  
+  
+temp_fl_shell_13 <- read_delim(paste0(source_directory, "finds/shell/fl_13_shell.csv"), delim=";") %>%
+  normalize() %>%
+  select(-zzs, -feat, -initials, -date)
+
+temp_fl_shell_14 <- read_excel(paste0(source_directory, "finds/shell/fl_shell_14_adapted.xlsx")) %>% 
+  normalize() %>%
+  fill(fnd) %>%
+  mutate(zssql=ifelse(grepl("^[0-9\\-][0-9\\-][0-9\\-][0-9\\-]+$", square), square, NA)) %>%
+  mutate(mni=ifelse(grepl("^[0-9]+$", square), square, NA)) %>%
+  fill(zssql) %>%
+  dplyr::filter(!grepl("Species", species))  %>%
+  dplyr::filter(!is.na(species)) %>%
+  dplyr::filter(!grepl("[sS]ector", species)) %>%
+  select(fnd, zssql, species, weight, mni)  %>%
+  mutate(weight= gsub("<", "", weight)) %>%
+  mutate(species = tolower(species)) %>%
+  mutate(species = gsub("[\\. ]", "_", species)) %>%
+  mutate(species = gsub("_$", "", species)) %>%
+  mutate(species = gsub("_[0-9]$", "", species)) %>%
+  mutate(species = gsub("zeepok", "sessalium", species)) %>%
+  mutate(species = gsub("unidet", "unidentified", species)) %>%
+  distinct(fnd, zssql, species, .keep_all=TRUE) %>%
+  gather(key=measurement, value=value, c(-fnd, -zssql, -species)) %>%
+  group_by(fnd, zssql) %>%
+  spread(key=species, value=value) 
+
+temp_fl_shell_14_mni <- temp_fl_shell_14 %>%
+ dplyr::filter(measurement == "mni")%>%
+ rename_all(.funs = funs(sub("$", "_mni", names(temp_fl_shell_14)))) %>%
+ rename(zssql = zssql_mni, fnd = fnd_mni) %>%
+  select(-contains("measurement"))
+
+temp_fl_shell_14_weight <- temp_fl_shell_14 %>%
+ dplyr::filter(measurement == "weight") %>%
+ rename_all(.funs = funs(sub("$", "_weight", names(temp_fl_shell_14)))) %>%
+ rename(zssql = zssql_weight, fnd = fnd_weight) %>%
+  select(-contains("measurement"))
+
+temp_fl_shell_14_adapted <- bind_cols(temp_fl_shell_14_mni, temp_fl_shell_14_weight)
+
+temp_fl_shell_15 <- read_delim(paste0(source_directory, "finds/shell/fl_shell_15.csv"), delim=";") %>% 
+  normalize("El Flaco") 
+
+
+temp_fl_shell_16 <- read_delim(paste0(source_directory, "finds/shell/fl_shell_16.csv"), delim=";") %>% 
+  normalize("El Flaco") %>%
+  select(-zssq) %>%
+  rename(fnd = find_number)
+
+temp_lp_shell <- read_excel(paste0(source_directory, "finds/shell/lp_shell.xlsx"), col_types = "text")  %>% 
+  normalize("La Poterie", convert_year = TRUE)
+
+temp_ll_shell <- read_excel(paste0(source_directory, "finds/shell/ll_shell.xlsx"), col_types = "text")  %>% 
+  normalize("La Luperona")
+
+temp_sw_shell_u1 <- read_excel(paste0(source_directory, "finds/shell/sw_shell.xls"), sheet = "Put 1", col_types = "text")  
+temp_sw_shell_u2 <- read_excel(paste0(source_directory, "finds/shell/sw_shell.xls"), sheet = "Put 2", col_types = "text")  
+temp_sw_shell_u3 <- read_excel(paste0(source_directory, "finds/shell/sw_shell.xls"), sheet = "Put 3", col_types = "text")  
+temp_sw_shell_u4 <- read_excel(paste0(source_directory, "finds/shell/sw_shell.xls"), sheet = "Put 4", col_types = "text")  
+temp_sw_shell_u5 <- read_excel(paste0(source_directory, "finds/shell/sw_shell.xls"), sheet = "Put 5", col_types = "text")  
+temp_sw_shell_u7 <- read_excel(paste0(source_directory, "finds/shell/sw_shell.xls"), sheet = "Put 7", col_types = "text")  
+temp_sw_shell_u8 <- read_excel(paste0(source_directory, "finds/shell/sw_shell.xls"), sheet = "Put 8", col_types = "text")  
+temp_sw_shell_u12 <- read_excel(paste0(source_directory, "finds/shell/sw_shell.xls"), sheet = "Put 12", col_types = "text")  
+
+temp_sw_shell <- bind_rows(temp_sw_shell_u1, temp_sw_shell_u2,temp_sw_shell_u3,temp_sw_shell_u4,temp_sw_shell_u5,temp_sw_shell_u7,temp_sw_shell_u8,temp_sw_shell_u12) %>%
+  mutate(fnd = gsub("Findnr.: ([0-9]+)", "\\1", X__1)) %>%
+  mutate(layer = gsub("Layer: ([0-9]+)", "\\1", X__1)) %>%
+  mutate(fnd = gsub(".*[a-zA-Z].*", "", fnd)) %>%
+  mutate(layer = gsub(".*[a-zA-Z].*", "", layer)) %>%
+  normalize("Spaanse Water") %>%
+  separate(id, c("zone", "sector", "square"))  %>%
+  gather(completeness, value, matches("(count)|(weight)|(w)|(_n)|(percent)")) %>%
+  mutate(completeness = gsub("_([a-z]+)$", "%\\1", completeness)) %>%
+  separate(completeness, c("completeness", "measurement"), sep= "%")
+
+temp_ec_shell  <- read_excel(paste0(source_directory, "finds/ec_finds.xlsx")) %>%
+  mutate(site = "El Cabo") %>%
+  mutate(vondstnr = as.character(vondstnr)) %>%
+  mutate_all(as.character) %>%
+  dplyr::filter(grepl("^SH", vondst_s_categorie)) %>%
+  mutate(remarks = coalesce(vondst_s_opmerking, vondst_v_opmerking)) %>%
+  select(fnd = vondstnr, category = vondst_s_categorie, total_weight = gewicht, total_number = aantal, remarks)
+
+
+temp_mor_shell <- read_excel(paste0(source_directory, "finds/shell/mor_shell.xlsx"))  %>% unname() 
+
+temp_mor_shellList <-  lapply(seq(from = 1, to = ncol(temp_mor_shell), by = 13), function(x) { 
+                              z <- temp_mor_shell[, x:(x+12)] 
+colnames(z) <- c("species", "zone",	"sector",	"square",	"layer",	"compl_1_count",	"compl_1_weight", "compl_2_count", "compl_2_weight", "ind_count",	"ind_weight",	"frag_weight",	"burnt_weight")
+                              return(z)} ) 
+temp_mor_shell_new <- ldply(temp_mor_shellList, bind_rows) 
+ 
+
+temp_mor_shell_new <- temp_mor_shell_new %>% mutate(species = rep(c("xxxxx", "Acanthopleura granulata", "Acmaea antillarum", "Acmaea leucopleura", "Acmaea pustulata", "Anadara notabilis", "Arca zebra", "Astraea caelata", "Astraea tecta", "Astraea tuber", "Bulla striata", "Cerithium itteratum", "Chama sarda", "Chama sinuosa", "Charonia variegata", "Chiton marmoratus", "Chiton squamosus", "Chiton tuberculatus", "Cittarium pica", "Codakia orbicularis", "Columbella mercatoria", "Coral sp.", "Coralliophyla abbreviata", "Cymatium femorale", "Cypraea cinerea", "Cypraea zebra", "Cypraecassis testiculus", "Donax denticulatus", "Donax striatus", "Drymaeus virgulatus", "Fissurella nimbosa", "Fissurella nodosa", "Hipponix antiquatus", "Linga pensylvanica", "Lucina pectinata", "Murex pomum", "Nerita peloronta", "Nerita tessellata", "Nerita versicolor", "Nodillittorina tuberculata", "pleurodonte sp.", "Purpura patula", "Strombus gallus", "Strombus gigas", "Strombus pugillis", "Tellina fausta", "Tellina radiata", "Thais deltoidea", "Thair haemastroma flor.", "Tect. Muricatus", "Choine cancellata", "Banbatia sp.", "Spandylus sp.", "Gassotea rhiz.", "Vasum capitellum", "Conus regius", "Spondylus ictericus", "Copulus sp.", "Gass. Phizophaea", "Divonicella guadisulcata", "Chama macerophylla", "Tonna maculosa", "Spondylus americanus", "Neritina virginea", "Cassotea rhizophaea", "Brachidontus exustus", "Hematoma emagimata", "Isognoma alatis", "Chione Cancellata", "Chama macrophylla", "Anomalocandia brasiliana", "Isognama datus", "Codakia castata", "Trachicardium muricatum", "Diadora sp", "Cyphama gibbosum", "Barbatia candida", "Vasum muricatum", "Conus sp.", "Petaloconchus inegellum", "Ahivella rivea", "Cassis tuberosa", "Getaloc. Irregularis", "Solea equus"), times = 175)) %>%
+  mutate_at(c("compl_1_count",	"compl_1_weight", "compl_2_count", "compl_2_weight", "ind_count",	"ind_weight",	"frag_weight",	"burnt_weight"), as.numeric) 
+
+
+temp_mor_shell_new_weight <- temp_mor_shell_new %>% 
+  select(species, zone, sector, square, layer, contains("weight")) %>%
+  adorn_totals(where = "col", na.rm = TRUE) %>%
+  select(species, zone, sector, square, layer, Total) %>%
+  fill(zone, sector, square, layer) %>%
+  distinct(zone, sector, square, layer, species, .keep_all=TRUE) %>%
+  group_by(zone, sector, square, layer) %>%
+  spread(species, Total) %>%
+  mutate(measurement = "weight")
+  
+temp_mor_shell_new_count <- temp_mor_shell_new %>% 
+  select(species, zone, sector, square, layer, contains("count")) %>%
+  adorn_totals(where = "col", na.rm = TRUE) %>%
+  select(species, zone, sector, square, layer, Total) %>%
+  fill(zone, sector, square, layer) %>%
+  distinct(zone, sector, square, layer, species, .keep_all=TRUE) %>%
+  group_by(zone, sector, square, layer) %>%
+  spread(species, Total) %>%
+  mutate(measurement = "count")
+
+temp_mor_shell_new_new <- bind_rows(temp_mor_shell_new_weight, temp_mor_shell_new_count) %>%
+  select(-contains("xxx")) %>%
+  normalize("Morel")
+
+
+temp_aag_shell_96 <- read_excel(paste0(source_directory, "finds/aag_finds_96.xlsx")) %>%
+  normalize("Anse a la Gourde") %>% 
+  select(coordx, coordy, total_weight = schelp)
+
+temp_coc_shell <- read_excel(paste0(source_directory, "find_lists/coc_find_list.xls")) %>%
+  normalize("Cocoyer St. Charles") %>%
+  select(site, fnd = feature, contains("layer")) %>%
+  gather(layer, finds, contains("layer")) %>%
+  mutate(layer = gsub("layer_", "", layer)) %>%
+  dplyr::filter(grepl("shell?", finds, ignore.case = TRUE)) %>%
+  select(-finds)
+
+temp_sb054b_shell <- read_excel(paste0(source_directory, "find_lists/SB054B_fauna_findlist.xlsx"), sheet = 2) %>%
+  normalize("SB054B") %>%
+  rename_(.dots=setNames(names(.), tolower(gsub("(.*)_.*", "total_\\1", names(.))))) %>%
+  mutate(total_weight = as.character(round(as.numeric(total_weight, 2)))) %>%
+  rename(fnd = findnumber, total_number = total_n) %>%
+  dplyr::filter(!is.na(fnd)) %>%
+  dplyr::filter(!grepl("(pisces)|(homo)|(aves),(sula)|(reptilia)|(bos)|(mammalia)", species, ignore.case=TRUE))
+
+```
+
+```{r, echo=FALSE}
+
+temp_new_shell_1_weight <- bind_rows(temp_ca_shell_16_17_18,temp_fl_shell_13, temp_fl_shell_14_adapted,temp_fl_shell_15,temp_fl_shell_16, temp_lp_shell, temp_ll_shell) %>%
+  select(site,fnd, material,zone, sector,square,unit,layer,feature,matches("^o[0-9]$"),matches("^o[0-9]_weight")) %>%
+  gather(other1, species, matches("^o[0-9]$")) %>%
+  gather(other2, value, matches("^o[0-9]_weight")) %>%
+  mutate(measurement = "weight") %>%
+  mutate(other2 = gsub("_.*", "", other2)) %>%
+  dplyr::filter(other1 == other2) %>%
+  select(-contains("other")) %>%
+  mutate(species = (gsub(" weight", "", species)))
+
+temp_new_shell_1_number <- bind_rows(temp_ca_shell_16_17_18,temp_fl_shell_13, temp_fl_shell_14_adapted,temp_fl_shell_15,temp_fl_shell_16, temp_lp_shell, temp_ll_shell) %>%
+  select(site,fnd, material,zone, sector,square,unit,layer,feature,matches("^o[0-9]$"),matches("^o[0-9]_mni")) %>%
+  gather(other1, species, matches("^o[0-9]$")) %>%
+  gather(other2, mni, matches("^o[0-9]_mni")) %>%
+  mutate(measurement = "mni")   %>%
+  mutate(other2 = gsub("_.*", "", other2)) %>%
+  dplyr::filter(other1 == other2) %>%
+  select(-contains("other")) %>%
+  mutate(species = gsub(" weight", "", species))
+
+
+temp_new_shell_2 <- bind_rows(temp_ca_shell_16_17_18,temp_fl_shell_13, temp_fl_shell_14_adapted,temp_fl_shell_15,temp_fl_shell_16, temp_lp_shell, temp_ll_shell) %>%
+  select(-matches("^o[0-9]$"),-matches("^o[0-9]_"), -date, -matches("1$")) %>%
+  gather(species, value, matches("(_weight)|(_mni)")) %>%
+  mutate(species = str_to_title(gsub(" weight", "", species))) %>%
+  mutate(species = gsub("_((mni)|(weight))", "%\\1", species)) %>%
+  separate(species, c("species", "measurement"), sep= "%")
+
+temp_shell_new <- bind_rows(temp_new_shell_1_weight, temp_new_shell_1_number, temp_new_shell_2)
+
+temp_shell_minimal <- bind_rows(temp_ll_shell, temp_ec_shell, temp_mor_shell, temp_coc_shell,temp_sb054b_shell) %>%
+  gather(species, value, matches("total")) %>%
+  mutate(species = gsub("_((mni)|(weight))", "%\\1", species)) %>%
+  separate(species, c("key", "measurement"), sep= "%") %>%
+  select(-key)
+
+temp_shell_old <- bind_rows(temp_aag_shell_96, temp_sw_shell) 
+
+
+flat_shell <- bind_rows(temp_shell_new, temp_shell_old, temp_shell_minimal) %>%
+  mutate(material = "shell") %>%
+  mutate(species = str_to_title(gsub("_", " ", species))) %>%
+  select(-date) 
+
+```

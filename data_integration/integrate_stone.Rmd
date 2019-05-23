@@ -1,0 +1,64 @@
+---
+title: "stone integration"
+output: html_document
+---
+
+```{r}
+temp_ca_stone_16_17_18 <- read_excel(paste0(source_directory, "finds/stone/ca_stone_16_17_18.xlsx"), col_types = "text")  %>% 
+  normalize("El Carril", convert_year = TRUE)
+
+temp_fl_stone_13 <- read_excel(paste0(source_directory, "finds/stone/fl_stone_13.xlsx"), col_types = "text")  %>% 
+  normalize("El Flaco") %>%
+  rename(fnd = find_number)
+
+temp_fl_stone_16 <- read_excel(paste0(source_directory, "finds/stone/fl_stone_16.xlsx"), col_types = "text")  %>% 
+  normalize("El Flaco") %>%
+  rename(fnd = find_number)
+
+temp_lp_stone <- read_excel(paste0(source_directory, "finds/stone/lp_stone.xlsx"), col_types = "text")  %>% 
+  normalize("La Poterie") %>%
+  mutate(year = "2016")
+
+temp_ll_stone <- read_excel(paste0(source_directory, "finds/stone/ll_stone.xlsx"), col_types = "text")  %>% 
+  normalize("La Luperona") %>%
+  mutate(year = "2013")
+
+temp_temp_atr_stone <- read_excel(paste0(source_directory, "finds/stone/atr_stone.xlsx"), col_types = "text")  %>% 
+  rename(fnd = find_number) %>%
+  rename(number = count)  %>%
+  normalize("Anse Trabaud")
+
+temp_ec_stone  <- read_excel(paste0(source_directory, "finds/ec_finds.xlsx")) %>%
+  normalize("El Cabo") %>%
+  dplyr::filter(grepl("^ST", vondst_s_categorie)) %>%
+  mutate(remarks = coalesce(vondst_s_opmerking, vondst_v_opmerking)) %>%
+  select(fnd = vondstnr, category = vondst_s_categorie, total_weight = gewicht, total_number = aantal, remarks)
+
+temp_mor_stone <- read_excel(paste0(source_directory, "finds/mor_finds.xls")) %>%
+  normalize() %>%
+  dplyr::select(zone, sector, square, layer, contains("stone"), contains("flint")) %>%
+  mutate(stone_g = ifelse(is.na(stone_g), 0, stone_g), stone_n = ifelse(is.na(stone_n), 0, stone_n), flint_g = ifelse(is.na(flint_g), 0, flint_g), flint_n = ifelse(is.na(flint_n), 0, flint_n)) %>%
+  mutate(total_weight = as.numeric(stone_g) + as.numeric(flint_g), total_number = as.numeric(stone_n) + as.numeric(flint_n)) %>%
+  mutate(total_weight = as.numeric(total_weight)) %>%
+  select(-contains("stone"), -contains("flint"))
+
+temp_pp_stone <- read_excel(paste0(source_directory, "finds/stone/ll_stone.xlsx"), col_types = "text")  %>% 
+  normalize("Plum Piece") %>%
+  mutate(total_weight = as.numeric(weight)) %>%
+  select(-weight)
+
+
+
+```
+
+```{r echo=FALSE}
+
+flat_stone <- bind_rows(temp_ca_stone_16_17_18,temp_fl_stone_13,temp_fl_stone_16, temp_lp_stone, temp_ll_stone, temp_mor_stone, temp_pp_stone) %>%
+  mutate(material = "stone") %>%
+  select(-contains("x_"), -date) %>%
+  mutate(material = "stone") %>%
+  rename(total_number = number)
+
+```
+
+

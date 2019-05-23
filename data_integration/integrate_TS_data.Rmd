@@ -1,0 +1,197 @@
+---
+title: "integrate ts data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# some code used to integrate ts data
+
+
+```{r}
+source_directory <- "J:/ResearchData/ARCH/Nexus1492 Data Management/SOURCES/van_oranje_veldwerkschijf/Onderzoek 2016/El Flaco/Kopie Getac 15-09-2016/MAGNET Field PC/Jobs/"
+
+ts_connection_flaco_1 <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'FLACO2016-UNITS AND FEATURES.mjf'))
+ts_connection_flaco_2 <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'FLACO2016-LEVELDATA.mjf'))
+ts_connection_flaco_3 <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'UNIT37COPY.mjf'))
+ts_connection_flaco_4 <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'UNIT37FEATURES.mjf'))
+ts_connection_flaco_5 <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'UNIT44-45 EDITED.mjf'))
+ts_connection_flaco_6 <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'UNITS AND FEATURES COMP-4.5.2016.mjf'))
+ts_connection_flaco_7 <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'UNITS AND FEATURES COMP.mjf'))
+ts_connection_flaco_8 <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'fl15.2015.06.16.mjf'))
+ts_connection_flaco_9 <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'FLACO15.05.21.mjf'))
+ts_connection_flaco_10 <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'FLACO2015.06.04.mjf'))
+ts_connection_flaco_11 <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'FLACO2015.06.05.mjf'))
+ts_connection_flaco_12 <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'UNITS AND FEATURES COMP1.mjf'))
+
+
+ts_points_flaco_1 <- dbGetQuery( ts_connection_flaco_1,'select * from tblStations' ) %>% mutate(file = "1")
+ts_points_flaco_2 <- dbGetQuery( ts_connection_flaco_2,'select * from tblStations' ) %>% mutate(file = "2")
+ts_points_flaco_3 <- dbGetQuery( ts_connection_flaco_3,'select * from tblStations' ) %>% mutate(file = "3")
+ts_points_flaco_4 <- dbGetQuery( ts_connection_flaco_4,'select * from tblStations' ) %>% mutate(file = "4")
+ts_points_flaco_5 <- dbGetQuery( ts_connection_flaco_5,'select * from tblStations' ) %>% mutate(file = "5")
+ts_points_flaco_6 <- dbGetQuery( ts_connection_flaco_6,'select * from tblStations' ) %>% mutate(file = "6")
+ts_points_flaco_7 <- dbGetQuery( ts_connection_flaco_7,'select * from tblStations' ) %>% mutate(file = "7")
+ts_points_flaco_8 <- dbGetQuery( ts_connection_flaco_8,'select * from tblStations' ) %>% mutate(file = "8")
+ts_points_flaco_9 <- dbGetQuery( ts_connection_flaco_9,'select * from tblStations' ) %>% mutate(file = "9")
+ts_points_flaco_10 <- dbGetQuery( ts_connection_flaco_10,'select * from tblStations' ) %>% mutate(file = "10")
+ts_points_flaco_11 <- dbGetQuery( ts_connection_flaco_11,'select * from tblStations' ) %>% mutate(file = "11")
+ts_points_flaco_12 <- dbGetQuery( ts_connection_flaco_11,'select * from tblStations' ) %>% mutate(file = "12")
+
+
+flaco_ts_data <- bind_rows(ts_points_flaco_1, ts_points_flaco_2, ts_points_flaco_3, ts_points_flaco_4, ts_points_flaco_5, ts_points_flaco_6, ts_points_flaco_7, ts_points_flaco_8, ts_points_flaco_9, ts_points_flaco_10, ts_points_flaco_11) %>%
+  mutate(date = anydate(SecondsFrom1970))  %>%
+  dplyr::filter(grepl("2016-05-", date))
+
+
+ts_connection_flaco_1 <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'ts_data/data/2018/FLACO2016-UNITS AND FEATURES.mjf'))
+
+
+dbDisconnect(ts_connection_flaco_1)
+```
+
+
+```{r }
+
+ts_connection_carril_2016 <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'ts_data/data/OLDER/CARRIL2016-LEVELDATA.mjf'))
+ts_connection_carril_2017_2018_excav <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'ts_data/data/2018/Carril excav.mjf'))
+ts_connection_carril_2017_2018_level <- dbConnect(RSQLite::SQLite(), paste0(source_directory, 'ts_data/data/2018/Carril elev.mjf'))
+
+
+ts_points_carril_2016 <- dbGetQuery( ts_connection_carril_2016,'select tblSoPoints.name as point_name, C1 as latitude, C2 as longitude, C3 as altitude, tblLayers.name as layer from tblSoPoints inner join tblLayers on tblSoPoints.fkeylayer =tblLayers.keyLayers' )
+
+# tables <- dbListTables(connection2017_2018)
+# for (table in tables){
+#  table_contents <- dbGetQuery(connection2017_2018, paste0("select count(*) from ", table) )
+#  print(paste0(table, " : ", table_contents)) 
+# }
+# dbGetQuery(connection2017_2018, "select * from tblSetOfPoints")
+
+
+ts_cleaned_carril_2016 <- points2016 %>% 
+  mutate(layer = tolower(layer)) %>%
+  mutate(layer = gsub("([^ ])points", "\\1 points", layer))  %>% 
+  mutate_all(as.character()) 
+
+
+
+ts_enhanced_carril_2016 <- ts_cleaned_carril_2016 %>%
+  mutate_all(as.character()) %>% 
+  mutate_all(funs(ifelse(grepl("^$", .), NA, .))) %>% 
+  mutate(point_name_old = point_name) %>%
+  dplyr::filter(!grepl("!000", point_name)) %>%
+  mutate(source = "tsdata 2017-2018") %>%
+  mutate(point_name = sub("\\.", "-", point_name)) %>%
+  mutate(set_name = ifelse(grepl("^F", point_name), gsub("^(F[0-9]+?-[0-9]+).*?$", "\\1", point_name), "")) %>%
+  mutate(layer =    ifelse(is.na(layer), ifelse(grepl("^F", point_name), "features", layer), layer),         layer =    ifelse(grepl("feature points", layer), "features", layer),
+         layer =    ifelse(is.na(layer), ifelse(grepl("FIX", point_name), "fixed", layer), layer),
+         layer =    ifelse(is.na(layer), ifelse(grepl("PHP", point_name), "photo points", layer), layer),
+         layer =    ifelse(is.na(layer), ifelse(grepl("^U", point_name), "units", layer), layer),       
+         #isArea =   ifelse(grepl("^F", point_name), "1", isArea),
+         layer =    ifelse(is.na(layer), ifelse(grepl("stone", point_name, ignore.case=T), "objects", layer), layer),
+         layer =    ifelse(is.na(layer), ifelse(grepl("griddle", point_name, ignore.case=T), "objects", layer), layer),
+         #isArea =   ifelse(grepl("^DEM$", layer), "0", isArea),
+         layer =   ifelse(grepl("^bedrock$", layer, ignore.case=T), "bed rock", layer),
+         projection = ifelse(grepl("-71", longitude), "decimal degrees", "UTMNorth-Zone_19")) %>%
+         #set_name = ifelse(grepl("^F", point_name), gsub("^(F[0-9]+?-[0-9]+).*?$", "\\1", point_name), "") %>%
+         #                        isArea == 0  ~ "line",
+         #                        TRUE ~ "")) %>%
+        mutate(latitude = as.numeric(latitude), longitude = as.numeric(longitude)) %>%
+        sort_points(clockwise = TRUE) %>%
+        mutate(latitude = as.character(latitude), longitude = as.character(longitude), altitude = as.character(altitude)) 
+
+
+ts_points_carril_2017_2018 <- dbGetQuery(ts_connection_carril_2017_2018_excav, "select tblSoPoints.Name as point_name, C1 as latitude, C2 as longitude, C3 as altitude, tblSetOfPoints.Name as set_name, keySetOfPoints, OrderingNumber, fkeyLayer, fkeyDataset
+                   from (tblSoPoints left join tblSetOfPtsPoints on keySoPoint = fkeySoPoint) left join tblSetOfPoints on fkeySetOfPoints = keySetOfPoints") 
+
+ts_layers_carril_2017_2018 <- dbGetQuery(ts_connection_carril_2017_2018_excav, "select keyLayers, tblLayers.name as layer_point from tblLayers") %>% mutate(shape_type = "point")
+ts_datasets_carril_2017_2018 <- dbGetQuery(ts_connection_carril_2017_2018_excav, "select keyDataset, ProjectionId as projection from tblDatasets")
+ts_points_layers_carril_2017_2018 <- ts_points_carril_2017_2018 %>% left_join(ts_layers_carril_2017_2018, by = c("fkeyLayer" = "keyLayers"))
+ts_points_layers_projection_carril_2017_2018 <- ts_points_layers_carril_2017_2018 %>% left_join(ts_datasets_carril_2017_2018, by = c("fkeyDataset" = "keyDataset"))
+
+ts_lines_carril_2017_2018 <- dbGetQuery(ts_connection_carril_2017_2018_excav, "select CodeString as line_code, fkeyCodeDef, isArea, fkeyPtList, Name as layer_line from tblLineProps left join tblLayers on fkeyLayer = keyLayers")
+ts_codes_carril_2017_2018 <- dbGetQuery(ts_connection_carril_2017_2018_excav, "select keyCodeDef, nameCode from tblCodeDefs")
+ts_lines_codes_carril_2017_2018 <- ts_lines_carril_2017_2018 %>% left_join(ts_codes_carril_2017_2018, by = c("fkeyCodeDef" = "keyCodeDef"))
+
+ts_joined_carril_2017_2018 <- ts_points_layers_projection_carril_2017_2018 %>% left_join(ts_lines_codes_carril_2017_2018, by = c("keySetOfPoints" = "fkeyPtList"))
+
+ts_cleaned_carril_2017_2018 <- ts_joined_carril_2017_2018 %>% 
+  unite(layer, layer_point, layer_line, sep = " ", remove = TRUE) %>% 
+  mutate_all(funs(gsub(" $", "", .))) %>% 
+  mutate(
+    layer = tolower(gsub("NA ?", "", layer)),
+    nameCode = gsub(".*HiddenCode.*","", nameCode),
+    layer =  gsub("features features","features", layer),
+    layer =  gsub("carril","site", layer,ignore.case=T)
+  )  %>% 
+  select(-contains("key"))   %>% 
+  mutate_all(as.character()) 
+
+
+
+ts_enhanced_carril_2017_2018 <- ts_cleaned_carril_2017_2018 %>% 
+  mutate_all(funs(ifelse(grepl("^$", .), NA, .))) %>% 
+  mutate(point_name_old = point_name) %>%
+  dplyr::filter(!grepl("!000", point_name)) %>%
+  mutate(point_name = sub("\\.", "-", point_name)) %>%
+  mutate(source = "tsdata 2017-2018") %>%
+  mutate(layer =    ifelse(is.na(layer), ifelse(grepl("^F", point_name), "features", layer), layer),
+         layer =    ifelse(is.na(layer), ifelse(grepl("FIX", point_name), "fixed", layer), layer),
+         layer =    ifelse(is.na(layer), ifelse(grepl("PHP", point_name), "photo points", layer), layer),
+         layer =    ifelse(is.na(layer), ifelse(grepl("^U", point_name), "units", layer), layer),       isArea =   ifelse(grepl("^F", point_name), "1", isArea),
+         layer =    ifelse(is.na(layer), ifelse(grepl("stone", point_name, ignore.case=T), "objects", layer), layer),
+         layer =    ifelse(is.na(layer), ifelse(grepl("griddle", point_name, ignore.case=T), "objects", layer), layer),
+         isArea =   ifelse(grepl("^DEM$", layer), "0", isArea),
+         layer =   ifelse(grepl("^bedrock$", layer, ignore.case=T), "bed rock", layer),
+         projection = ifelse(grepl("-71", longitude), "decimal degrees", "UTMNorth-Zone_19"),
+         set_name = ifelse(grepl("^F", point_name), gsub("^(F[0-9]+?-[0-9]+).*?$", "\\1", point_name), set_name),
+         shape_type = case_when(isArea == 1 ~ "polygon",
+                                isArea == 0  ~ "line",
+                                TRUE ~ ""),
+         ordering_number = as.numeric(OrderingNumber))  %>%  
+         mutate(ordering_number = ifelse(is.na(ordering_number) & ! is.na(set_name), row_number(), ordering_number)) %>%
+         select(-isArea, -line_code, -nameCode, -OrderingNumber ) %>%
+         group_by(set_name) %>%
+         mutate(latitude = as.numeric(latitude), longitude = as.numeric(longitude)) %>%
+         sort_points(clockwise = TRUE) %>%
+         mutate(latitude = as.character(latitude), longitude = as.character(longitude), altitude = as.character(altitude)) 
+
+
+
+ts_features_for_simone_carril <- bind_rows(ts_enhanced_carril_2016, ts_enhanced_carril_2017_2018)  %>%
+        mutate(site = "El Carril") %>%
+        dplyr::filter(grepl("feature", layer))  %>%
+        mutate(feature_number_stripped = gsub("^F0?", "", set_name)) %>%
+        full_join(ts_features_to_join, by = c("site", "feature_number_stripped" = "feature_number")) %>%
+        dplyr::filter(cancelled == FALSE) %>%
+        select(-ts_point_name, -ts_measurement, -drawn, -sectioned, -drawing_sheet_no, -cancelled) 
+        
+
+ts_other_for_simone_carril <- bind_rows(ts_enhanced_carril_2016, ts_enhanced_carril_2017_2018) %>%
+  mutate(site = "El Carril") %>%
+  dplyr::filter(!grepl("feature", layer))
+
+
+ts_000_2016_for_simone <- bind_rows(ts_cleaned_carril_2016) %>%
+  dplyr::filter(grepl("!000", point_name))
+
+ts_000_2017_2018_for_simone <- bind_rows(ts_cleaned_carril_2017_2018) %>%
+  dplyr::filter(grepl("!000", point_name))
+
+
+```
+
+
+```{r}
+write.xlsx(ts_features_for_simone_carril, paste0(output_directory, paste0("features_simone_carril_", Sys.Date(),  ".xlsx")))
+write.xlsx(ts_other_for_simone_carril, paste0(output_directory, paste0("other_simone_carril_", Sys.Date(),  ".xlsx")))
+write.xlsx(ts_000_2016_for_simone, paste0(output_directory, paste0("000_2016_simone_carril_", Sys.Date(),  ".xlsx")))
+write.xlsx(ts_000_2017_2018_for_simone, paste0(output_directory, paste0("000_2017_2018_simone_carril_", Sys.Date(),  ".xlsx")))
+
+write.xlsx(ts_points_carril_2016, paste0(output_directory, "ts_points_carril_2016.xlsx"))
+write.xlsx(ts_points_carril_2017_2018, paste0(output_directory, "ts_points_carril_2017_2018.xlsx"))
+write.xlsx(ts_lines_carril_2017_2018, paste0(output_directory, "ts_lines_carril_2017_2018.xlsx"))
+```
+

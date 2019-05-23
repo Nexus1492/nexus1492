@@ -1,0 +1,69 @@
+---
+title: "photos"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+temp_photo_directories <- read_delim(paste0(source_directory, "photos/directory_listings/directories.csv"), 
+    ";", escape_double = FALSE, trim_ws = TRUE)
+```
+
+
+
+```{r}
+temp_photo_files <- tibble()
+
+for(dir in temp_photo_directories$directory) {
+  
+  temp_files <- list.files(dir, full.names = TRUE, recursive = TRUE, pattern = "(jpe?g)|(JPE?G)")
+  temp_dirs <- rep(dir, length(temp_files))
+  temp_df <- tibble(directory = temp_dirs, file = temp_files)
+  temp_photo_files <- bind_rows(temp_photo_files, temp_df)
+}
+
+temp_photos <- temp_photo_files %>%
+  left_join(temp_photo_directories) %>%
+  select(-directory)
+
+```
+
+```{r}
+feature_photos <- temp_photos %>% 
+  dplyr::filter(content == "feature") %>%
+  mutate(features = gsub(".*/(F0?[0-9 F\\-]+).*?", "\\1", file)) %>%
+  separate(features, c("feature1", "feature2", "feature3", "feature4", "feature5", "feature6"), sep = "[+ ]", fill = "warn", extra = "warn") %>%
+  gather(key = "temporary", value = "feature", feature1, feature2, feature3, feature4, feature5, feature6) %>%
+  select(-temporary) %>%
+  dplyr::filter(!is.na(feature)) %>%
+   dplyr::filter(!grepl("jpe?g", feature, ignore.case = TRUE))
+  
+
+object_photos <- temp_photos %>% 
+  dplyr::filter(content == "object") %>%
+   mutate(fnd = gsub(".*(FND [0-9 FND]+).*", "\\1", file)) %>%
+   mutate(material = gsub(".*Content-([^/]+).*", "\\1", file)) %>%
+   mutate(material = gsub("s$", "\\1", material)) %>%
+   mutate(material = tolower(material)) %>%
+   mutate(material = gsub(" ?finds?", "", material)) %>%
+   dplyr::filter(!grepl("jpe?g", material, ignore.case = TRUE))
+
+level_photos <- temp_photos  %>% 
+  dplyr::filter(content == "level") %>%
+  mutate(unit = gsub(".*Unit ([0-9]+).*", "\\1", file)) %>%
+   dplyr::filter(!grepl("jpe?g", unit, ignore.case = TRUE))
+
+profile_photos <- temp_photos  %>% 
+  dplyr::filter(content == "profile") %>%
+  mutate(unit = gsub(".*Unit ([0-9]+).*", "\\1", file)) %>%
+   dplyr::filter(!grepl("jpe?g", unit, ignore.case = TRUE))
+
+unit_photos <- bind_rows(level_photos, profile_photos)
+
+flat_photos = bind_rows(unit_photos, object_photos, feature_photos)
+
+```
+

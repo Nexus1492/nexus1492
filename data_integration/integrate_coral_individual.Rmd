@@ -1,0 +1,22 @@
+---
+title: "Integrate Coral Individual"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r }
+temp_mor_coral_ind <- read_excel(paste0(source_directory, "finds_individual/coral/mor_coral.xlsx")) %>% 
+  normalize("Morel")
+
+```
+
+
+```{r }
+
+flat_coral_individual <- temp_mor_coral_ind
+
+```
+

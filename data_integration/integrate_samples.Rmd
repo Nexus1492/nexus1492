@@ -1,0 +1,39 @@
+---
+title: "samples"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+
+temp_leuven_thin_sections_bert <- read_excel(paste0(source_directory, "samples/Copy of All samples correspondence table .xlsx"), sheet=1) %>% 
+  mutate(researcher = "Bert Nuyt")
+
+temp_leuven_thin_sections_anneleen <- read_excel(paste0(source_directory, "samples/Copy of All samples correspondence table .xlsx"), sheet=2) %>% 
+  mutate(researcher = "Anneleen Stienaers")
+
+temp_leuven_thin_sections <-bind_rows(temp_leuven_thin_sections_bert, temp_leuven_thin_sections_anneleen) %>%
+  normalize() %>%
+  mutate(sample_type = "thin_section") %>%
+  select(-for_researcher, -info_provided) %>%
+  mutate(leiden_id = gsub("000", "\\.", leiden_id)) %>%
+  mutate(leiden_id = gsub("^MC", "MC-", leiden_id))%>%
+  separate(leiden_id, c("site", "fnd", "sherd"), sep="[,\\.;\\- /]")  %>%
+  mutate(site = gsub("([^-])[0-9]+$", "\\1", site)) %>%
+  mutate(site_old = site, site = site_mapping[site]) %>%
+  dplyr::filter(island =="Dominican Republic")
+
+  
+  
+
+```
+
+
+```{r }
+
+```
+

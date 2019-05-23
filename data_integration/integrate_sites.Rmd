@@ -1,0 +1,37 @@
+---
+title: "integrate_sites"
+output: html_document
+---
+
+
+```{r }
+
+site_raw <- read_excel(paste0(source_directory, "sites/Site Data.xlsx"), col_types = "text") %>%  
+  select(-contains("X__")) %>%
+  mutate(id = 1:n()) %>%
+  normalize() 
+
+
+
+site_raw$site_type_id <- site_raw %>% 
+  group_by(type) %>% 
+  group_indices 
+
+site_raw$oid_id <- site_raw %>% 
+  group_by(typology) %>% 
+  group_indices
+
+site_type <- site_raw %>% 
+  create_value_list("type", "site_type_id")
+  
+flat_sites <- site_raw %>%
+  select(id, contains("_id"), name, latitude, longitude)
+  mutate_all(str_replace_all, "'"      , "&apos;") %>%
+  mutate_all(str_replace_all, "é", "&eacute;") %>% 
+  mutate_all(str_replace_all, "ê", "&ecirc;") %>% 
+  mutate_all(str_replace_all, "è", "&egrave;") %>% 
+  mutate_all(str_replace_all, "á", "&aacute;") %>% 
+  mutate_all(str_replace_all, "â", "&acirc;") %>% 
+  mutate_all(str_replace_all, "à", "&agrave;") 
+
+```

@@ -1,0 +1,36 @@
+---
+title: "shell_individual"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r }
+temp_aag_shell_ind <- read_excel(paste0(source_directory, "finds_individual/shell/aag_shell.xlsx")) %>%
+  normalize("Anse a la Gourde") %>%
+  select(site, fnd = number, zone, sector, square, artefact = type, type = shell, remarks)
+
+temp_mor_shell_ind <- read_excel(paste0(source_directory, "finds_individual/shell/mor_shell.xlsx")) %>%
+  normalize("Morel")
+
+temp_des_shell_ind <- read_excel(paste0(source_directory, "find_lists/des_find_list.xls")) %>%
+  normalize() %>%
+  select(site, fnd = drac_id, unit, layer, category, remarks) %>%
+  dplyr::filter(grepl("shell", category, ignore.case = TRUE))
+
+
+temp_aae_shell_ind <- read_excel(paste0(source_directory, "find_lists/aae_beams.xlsx")) %>%
+  normalize("Anse a l'Eau") %>%
+  select(site, fnd = id, unit = testpit, beam, zone, sector, square, layer, depth, remarks) %>%
+  na_if("999") %>%
+  dplyr::filter(grepl("shell", beam, ignore.case = TRUE))
+
+```
+
+```{r}
+flat_shell_individual <- bind_rows(temp_aag_shell_ind, temp_mor_shell_ind, temp_aae_shell_ind)
+```
+

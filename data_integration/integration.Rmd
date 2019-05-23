@@ -1,0 +1,385 @@
+---
+title: "integration"
+output: html_document
+---
+
+
+```{r}
+# rmd_source("integrate_bone.Rmd")
+# rmd_source("integrate_ceramics.Rmd")
+# rmd_source("integrate_ceramics_individual.Rmd")
+# rmd_source("integrate_charcoal.Rmd")
+# rmd_source("integrate_coral.Rmd")
+# rmd_source("integrate_crab.Rmd")
+# rmd_source("integrate_shell.Rmd")
+# rmd_source("integrate_stone.Rmd")
+# rmd_source("integrate_stone_individual.Rmd")
+# rmd_source("integrate_sites.Rmd")
+# rmd_source("integrate_featurelists.Rmd")
+# rmd_source("integrate_findlists.Rmd")
+# rmd_source("integrate_references.Rmd")
+
+```
+
+```{r}
+db_report_linking_table <- flat_publications %>%
+  mutate_all(as.character) %>%
+  dplyr::filter(type == "nexus report") %>%
+  select(id, site, year) 
+
+```
+
+
+```{r}
+
+db_area<- read_delim("J:/ResearchData/ARCH/Nexus1492 Data Management/DATA_SETS/Integration/area/islands_bboxes.csv", ";", escape_double = FALSE, trim_ws = TRUE, col_types = cols(.default = "c")) %>%
+  mutate(id = 1:n())
+
+db_site <- flat_sites
+
+site_linking_table <- flat_sites %>%
+  select(name, area, matches("^id$")) %>%
+  group_by(name) 
+
+```
+
+```{r}
+
+temp_oids_raw <- flat_sites %>% 
+  group_by(typology) %>%
+  summarise(site_ids = paste(id, collapse=",")) %>% 
+  dplyr::filter(grepl("(oid|aino|aic)$", typology)) %>% 
+  mutate(name = strsplit(typology, " ?/ ?")) %>%
+  unnest(name) %>%
+  mutate(site_id = strsplit(site_ids, ",")) %>%
+  select(-site_ids) %>%
+  unnest(site_id) %>%
+  dplyr::filter(!is.na(name)) %>%
+  mutate(name = str_to_title(name)) %>%
+  mutate(id = 1:n())
+
+db_oid <- read_delim(paste0(source_directory, "oid/oid.csv"), ";", escape_double = FALSE, trim_ws = TRUE, col_types = cols(.default = "c")) 
+
+oid_linking_table <- oid  %>% select(-description, -synonym, -level_up)
+
+db_oid_to_site <- temp_oids_raw %>% 
+  create_foreign_key(oid_linking_table, c("name"), "oid")
+
+temp_oids_raw$oid_id <- temp_oids_raw %>% group_by(name) %>% group_indices
+  
+oid_to_site <- oids_raw %>% select(site_id,oid_id) %>%
+  mutate(id = 1:n())
+
+```
+
+
+
+
+# difficult. because structured value list of materials is missing. Put time into this
+
+```{r}
+temp_materials <- sample_raw %>%
+  select(material, sub_material) %>%
+  distinct() %>%
+  mutate(id = 1:n())
+
+material_linking_table <- temp_materials %>%
+  select(-level_up, -description)  %>%
+  mutate(id = ifelse(is.na(synonym), id, synonym)) %>%
+  select(-synonym)
+
+db_artefact <- read_delim(paste0(source_directory, "artefacts/artefacts.csv"), 
+    ";", escape_double = FALSE, trim_ws = TRUE, col_types = cols(.default = "c")) %>%
+  dplyr::filter(is.na(synonym)) %>%
+  select(-synonym)
+
+artefact_linking_table <- artefact %>%
+  select(-level_up, -description) 
+
+db_species <- read_delim(paste0(source_directory, "species/species.csv"), 
+    ";", escape_double = FALSE, trim_ws = TRUE, col_types = cols(.default = "c")) %>%
+  dplyr::filter(is.na(synonym)) %>%
+  select(-synonym)
+
+species_linking_table <- db_species %>%
+  select(-level_up, -description) 
+
+
+# perhaps use for synonyms
+# material_self_linking_table <- material %>%
+#   select(id, name, synonym)
+#   
+# 
+material_linking_table <- material %>%
+   select(-level_up, -description) %>%
+   left_join(material_self_linking_table, by = c("synonym" = "id")) %>%
+   select(-contains("synonym")) %>%
+   gather("x", "name", name.x, name.y) %>%
+   select(-x) %>%
+   filter(!is.na(name))
+# 
+# material <- material %>%
+#   filter(is.na(synonym)) 
+
+```
+
+```{r echo=FALSE}
+
+temp_feature <- flat_feature_lists %>%
+  mutate(type = str_to_lower(type), id = as.character(1:n())) %>%
+  mutate(feature_number = gsub("NA-NA", "", feature_number)) %>%
+  mutate(type = ifelse(is.na(type), "-", type)) 
+
+temp_feature$feature_type_id <- feature %>% 
+  group_by(type) %>% 
+  group_indices 
+  
+db_feature_type <- temp_feature %>% 
+  distinct(type, feature_type_id) %>% 
+  rename(name = type, id = feature_type_id) %>%
+  arrange(name) %>%
+  mutate(description = NA)
+
+feature_linking_table <- temp_feature %>%
+  distinct(site, feature_number, .keep_all = TRUE) %>%
+  select(id, site, feature_number)
+
+feature <- temp_feature %>% 
+  create_foreign_key(report_linking_table, by=c("site",  "year"), "publication") %>%
+  create_foreign_key(site_linking_table, by = c("site" = "name"), var = "site") %>%
+  select(id, contains("_id"), everything()) %>%
+  rename(excavation_year = year) %>%
+  dplyr::filter(cancelled == FALSE)
+  
+```
+
+
+```{r}
+db_photo <- flat_photos %>%
+    mutate(fnd = as.character(fnd)) %>%
+    mutate(id = 1:n()) %>%
+    create_foreign_key(zssql_linking_table, by = c("site", "fnd"), var = "zssql") %>%
+    mutate(material = tolower(material))%>%
+    mutate(material = gsub("lithic", "stone", material))%>%
+    create_foreign_key(material_linking_table, by = c("material" = "name"), var = "material") 
+
+  
+```
+
+
+```{r echo=FALSE}
+
+temp_zssql <- find_lists %>%
+  mutate(id = 1:n())
+
+zssql_linking_table <- zssql %>%
+  select(site, fnd, id) %>%
+  distinct(site, fnd, id) 
+
+db_zssql <- temp_zssql %>%
+  create_foreign_key(report_linking_table, by=c("site",  "year"), "publication") %>%
+  create_foreign_key(feature_linking_table, by = c("site", "feature" = "feature_number"), var = "feature") %>% 
+  create_foreign_key(site_linking_table, by = c("site" = "name"), var = "site") %>%
+  rename(excavation_year = year) %>%
+  rename(find_number = fnd) %>%
+  mutate(canceled = ifelse(is.na(canceled), FALSE, canceled)) %>%
+  dplyr::filter(canceled == FALSE) %>%
+  select(-date, -contains("present"), -barcode, -data_quality, -canceled)
+  
+
+```
+
+```{r echo=FALSE}
+
+ db_ceramics_bulk <- flat_ceramics %>%
+   create_finds_table
+  
+```
+
+
+
+```{r echo=FALSE}
+
+db_stone_bulk <- flat_stone %>%
+    create_finds_table
+
+```
+
+```{r echo=FALSE}
+
+db_shell_bulk <- flat_shell %>%
+    create_finds_table()
+  
+```
+
+
+```{r echo=FALSE}
+
+db_bone_bulk <- flat_bone %>%
+  create_finds_table
+
+```
+
+```{r echo=FALSE}
+
+db_coral_bulk <- flat_coral %>%
+  create_finds_table
+ 
+```
+
+
+```{r echo=FALSE}
+
+db_charcoal_bulk <- flat_charcoal %>%
+  create_finds_table
+  
+```
+
+
+  
+```{r echo=FALSE}
+
+db_stone_individual <- flat_stone_individual %>%
+  mutate_all(as.character) %>%
+  clean_names(case = "snake") %>%
+  mutate(id = 1:n())  %>%
+  left_join(zssql_linking_table, by = c("site", "fnd"), na_matches = "never") %>%
+  rename(id = id.x, zssql_id = id.y) 
+
+```
+
+
+
+
+```{r}
+vessel_shape_linking_table      <- temp_ceramics_vessel_shape %>% select(id, original_name)
+wall_profile_linking_table      <- temp_ceramics_wall_profile %>% select(id, original_name)
+rim_profile_linking_table       <- temp_ceramics_rim_profile %>% select(id, original_name)
+lip_shape_linking_table         <- temp_ceramics_lip_shape %>% select(id, original_name)
+slip_position_linking_table     <- temp_ceramics_slip_position %>% select(id, original_name)
+color_linking_table             <- temp_ceramics_color %>% select(id, original_name)
+surface_finishing_linking_table <- temp_ceramics_surface_finishing %>% select(id, original_name)
+firing_color_linking_table      <- temp_ceramics_firing_color %>% select(id, original_name)
+
+ceramics_vessel_shape <- temp_ceramics_vessel_shape %>% select(-original_name)
+ceramics_wall_profile <- temp_ceramics_wall_profile %>% select(-original_name)
+ceramics_rim_profile <- temp_ceramics_rim_profile %>% select(-original_name)
+ceramics_lip_shape <- temp_ceramics_lip_shape %>% select(-original_name)
+ceramics_slip_position <- temp_ceramics_slip_position %>% select(-original_name)
+ceramics_color <- temp_ceramics_color  %>% select(-original_name)
+ceramics_surface_finishing <- temp_ceramics_surface_finishing %>% select(-original_name)
+ceramics_firing_color <- temp_ceramics_firing_color %>% select(-original_name)
+
+ceramics_individual <- temp_ceramics_individual_raw %>%
+  create_foreign_key(vessel_shape_linking_table, c("vessel_shape" = "original_name"), "vessel_shape") %>%
+  create_foreign_key(wall_profile_linking_table, c("wall_profile" = "original_name"), "wall_profile") %>%
+  create_foreign_key(rim_profile_linking_table, c("rim_profile" = "original_name"), "rim_profile") %>%
+  create_foreign_key(lip_shape_linking_table, c("lip_shape" = "original_name"), "lip_shape") %>%
+  create_foreign_key(slip_position_linking_table, c("slip_position" = "original_name"), "slip_position") %>%
+  create_foreign_key(color_linking_table, c("color_outside" = "original_name"), "color_outside") %>%
+  create_foreign_key(color_linking_table, c("color_inside" = "original_name"), "color_inside") %>%
+  create_foreign_key(surface_finishing_linking_table, c("surface_finishing_inside" = "original_name"), "surface_finishing_inside") %>%
+  create_foreign_key(surface_finishing_linking_table, c("surface_finishing_outside" = "original_name"), "surface_finishing_outside") %>%
+  create_foreign_key(firing_color_linking_table, c("firing_color" = "original_name"), "firing_color") 
+```
+
+
+
+```{r echo=FALSE}
+
+db_crab_individual <- flat_crab %>%
+   create_finds_table
+
+```
+
+
+```{r echo=FALSE}
+
+db_core <- flat_cores %>%
+  ungroup() %>%
+  mutate(id = 1:n()) %>%
+  select(id, site, lot, year, core_no, northing, easting) %>%
+  distinct() 
+
+cores_linking_table <- db_core %>%
+  select(core_no, id)
+
+db_core_to_layer <- flat_cores %>%
+  ungroup() %>%
+  mutate(id = 1:n()) %>%
+  select(id, core_no, layer_no, depth_start, depth_end, description, remarks) %>%
+  create_foreign_key(cores_linking_table, by=c("core_no" = "core_no"), "core") %>%
+  select(-core_no)
+  
+
+```
+
+```{r}
+  
+db_ornament_to_material <- ornaments %>%
+  select(id, material) %>%
+  mutate(material = gsub("[\\?\\)]", "", material)) %>%
+  mutate(material = strsplit(tolower(material), "[ ,\\.\\(+][ ,\\.\\(+]+")) %>%
+  unnest(material, .drop = NA) %>%
+  mutate(material = strsplit(tolower(material), " or ")) %>%
+  unnest(material, .drop = NA) %>%
+  dplyr::filter(!grepl(".*\\s.+\\s.+\\s.*", material)) %>%
+  mutate(material = gsub("probably ", "", material)) %>%
+  check_foreign_key(material_linking_table, c("material" = "name"), "material") %>%
+  rename(ornament_id = id)
+
+db_ornament <- flat_ornaments %>%
+ create_foreign_key(zssql_linking_table, by = c("site", "find_number" = "fnd"), var = "zssql") %>%
+ create_foreign_key(feature_linking_table, c("site" = "site", "level_feature" = "feature_number"), "feature") %>%
+ create_foreign_key(site_linking_table, by = c("site" = "name"), var = "site") %>%
+ create_foreign_key(artefact_linking_table, by = c("type" =  "name"), var = "artefact") %>%
+ #create_foreign_key(ornament_type, by = c("type" =  "name"), var = "ornament_type") %>%
+ #create_foreign_key(ornament_subtype, by = c("sub_type" =  "name"), var = "ornament_subtype") %>%
+ select(-unit, -zone, -sector, -square, -layer, -level_feature, -raw_material, -type, -sub_type, -year, -area_id) %>%
+ rename(remarks = observations)
+
+
+```
+
+```{r}
+db_sample <- sample_raw %>%
+ select(-matches("[0-9]"), -matches("^[a-z][a-z]?$"), -contains("comment"), -contains("elem")) %>%
+  mutate(id = 1:n()) %>%
+ create_foreign_key(material_linking_table, c("material" = "name"), "material") %>%
+ create_foreign_key(site_linking_table, c("site" = "name", "region" = "name"), "site") 
+ #create_foreign_key(artefact_linking_table, c("artefact" = "name"), "artefact") %>%
+ #create_foreign_key(species_linking_table, c("type" = "name"), "species") %>%
+ #create_foreign_key(oid_linking_table, c("culture" = "name"), "oid") 
+ 
+```
+
+```{r}
+
+write.xlsx(feature_list, paste0(reporting_directory, "reporting_features.xlsx"), sheet = "features")
+write.xlsx(find_lists,   paste0(reporting_directory, "reporting_finds.xlsx"), sheet = "finds")
+write.xlsx(stone,        paste0(reporting_directory, "reporting_stone.xlsx"), sheet = "stone")
+write.xlsx(shell,        paste0(reporting_directory, "reporting_shell.xlsx"), sheet = "shell")
+write.xlsx(bone,         paste0(reporting_directory, "reporting_bone.xlsx"), sheet = "bone")
+write.xlsx(coral,        paste0(reporting_directory, "reporting_coral.xlsx"), sheet = "coral")
+write.xlsx(charcoal,     paste0(reporting_directory, "reporting_charcoal.xlsx"), sheet = "charcoal")
+
+```
+
+```{r echo=FALSE}
+
+tables <- list("site", "area", "oid_to_site",  "oid","site_type", "feature", "zssql", "feature_type", "material", "stone_bulk", "shell_bulk", "bone_bulk", "coral_bulk", "charcoal_bulk", "crab_individual",  "metadata_database", "metadata_tables", "metadata_columns", "publication", "c14_lab", "c14_calibrated", "photograph", "archaeometry", "ceramics_bulk", "stone_individual", "ceramics_bulk", "ceramics_individual", "ceramics_vessel_shape", "ceramics_wall_profile", "ceramics_rim_profile",  "ceramics_lip_shape", "ceramics_slip_position", "ceramics_color", "ceramics_surface_finishing",  "ceramics_firing_color", "core", "core_layer")
+
+               
+write_output(tables)
+
+msaccess_tables <- list("site", "area", "oid_to_site",  "oid", "site_type", "zssql", "feature", "feature_type", "material", "stone_bulk", "shell_bulk", "coral_bulk", "charcoal_bulk", "crab_individual",  "metadata_tables", "metadata_columns", "publication")
+write_msaccess_output(msaccess_tables)
+
+completeness_report <- create_completeness_report(tables)
+
+write_csv_output(tables)
+write_excel_output(tables)
+
+
+
+```

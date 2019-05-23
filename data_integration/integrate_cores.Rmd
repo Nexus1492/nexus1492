@@ -1,0 +1,140 @@
+---
+title: "cores"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r }
+temp_cores_flaco_carril_2018 <- read_delim(paste0(source_directory, "cores/cores_flaco_carril_2018_processed_wk.csv"), 
+    ";", escape_double = FALSE, trim_ws = TRUE) %>%
+  fill(c("site", "lot", "core_no", "north", "east"))  %>%
+  mutate_all(as.character)
+
+temp_cores_sabcruz_santvieg_2018 <- read_delim(paste0(source_directory, "cores/cores_sabanacruz_santiagoviego_2018-1_processed_wk.csv"), 
+    ";", escape_double = FALSE, trim_ws = TRUE) %>%
+  fill(c("site", "lot", "core_no", "north", "east")) %>%
+  mutate_all(as.character)
+
+temp_gps_cores_fl_15 <- read_delim(paste0(source_directory, "gps_data/Trimble GPS data January 2018/Backup/Default/flacocoring/e012021a/Core.txt"), delim = "\t") %>%
+  clean_names(case = "snake")%>%
+  dplyr::filter(!is.na(id)) %>%
+  rename(core_no = comment) %>%
+  mutate(core_no = gsub("[^0-9]", "", core_no)) %>%
+  mutate(site = "El Flaco", year = "2015") %>%
+  mutate(lot = "main site")%>%
+  mutate_all(as.character)
+
+temp_gps_cores_2018_files <- list.files(paste0(source_directory, "gps_data/Trimble GPS data January 2018/Cores2018/Txtfiles"), recursive = TRUE, full.names = TRUE, pattern = "\\.txt") 
+
+temp_gps_cores_2018 <- temp_gps_cores_2018_files %>%
+  map(read_delim, delim="\t") %>%  
+  lapply(function(x) mutate_all(x, funs('as.character'))) %>%
+  reduce(bind_rows) %>%
+  clean_names(case = "snake") %>%
+  dplyr::filter(!is.na(id)) %>%
+  rename(core_no = comment) %>%
+  mutate(core_no = gsub("[A-Za-z#]", "", core_no)) %>%
+  mutate(year = "2018") %>%
+  mutate(lot = datafile, site = datafile) %>%
+  mutate(lot = gsub(".*hait.*", "Haitian", lot, ignore.case = TRUE)) %>%
+  mutate(lot = gsub("^fl.*", "El Flaco South", lot, ignore.case = TRUE)) %>%
+  mutate(lot = gsub(".*raf.*", "Rafaelito", lot, ignore.case = TRUE)) %>%
+  mutate(site = gsub(".*carri+l.*", "El Carril", site, ignore.case = TRUE)) %>%
+  mutate(site = gsub(".*fl.*", "El Flaco", site, ignore.case = TRUE)) %>%
+  mutate(site = gsub(".*saban.*", "Sabana Cruz", site, ignore.case = TRUE)) %>%
+  mutate(site = gsub(".*sant.*", "Santiago Viejo", site, ignore.case = TRUE)) %>%
+  mutate(lot = ifelse(grepl("\\.cor", lot), "main site", lot)) %>%
+  mutate(lot = ifelse(((site == "El Carril") & (lot == "main site")), "Puno", lot)) %>%
+  mutate_all(as.character)
+           
+temp_gps_cores <- bind_rows(temp_gps_cores_2018, temp_gps_cores_fl_15) %>%
+  select(site, year, core_no, lot, northing, easting) %>%
+  distinct(site, lot, year, core_no, .keep_all = TRUE) 
+  
+temp_gps_cores_dupes <- bind_rows(temp_gps_cores_2018, temp_gps_cores_fl_15) %>% 
+  group_by(site, lot, year, core_no) %>%
+  dplyr::filter(n() > 1) %>%
+  select(site, lot, year, core_no, northing, easting) 
+
+temp_cores_2018 <- bind_rows(temp_cores_flaco_carril_2018, temp_cores_sabcruz_santvieg_2018) %>%
+  group_by(core_no) %>%
+  mutate(layer_no = 1:n()) %>%
+  mutate_all(as.character) %>%
+  mutate(year = "2018")
+
+temp_remarks_fl_2015 <- read_excel(paste0(source_directory, "cores/Coring El Flaco 2015.xlsx")) %>%
+  rename(layer_no = X__1) %>%
+  gather(key="core_no", value ="remarks", -layer_no) %>%
+  mutate(core_no = gsub("CR", "", core_no)) %>%
+  mutate(layer_no = gsub("Layer ", "", layer_no))  %>%
+  dplyr::filter(!is.na(remarks)) %>%
+  mutate(layer_ref = dplyr::lag(layer_no)) %>%
+  dplyr::filter(layer_no == "Remarks") %>%
+  mutate_all(as.character) %>%
+  select(-layer_no)
+
+temp_cores_fl_2015 <- read_excel(paste0(source_directory, "cores/Coring El Flaco 2015.xlsx"), col_types = "text") %>%
+  rename(layer_no = X__1) %>%
+  dplyr::filter(!grepl("Remarks", layer_no))%>%
+  normalize() %>%
+  gather(key="core_no", value ="description", -layer_no) %>%
+  dplyr::filter(!is.na(description)) %>%
+  mutate(layer_no = gsub("Layer ", "", layer_no)) %>%
+  mutate(core_no = gsub("cr", "", core_no)) %>%
+  mutate(year = "2015", site = "El Flaco") %>%
+  left_join(remarks_fl_2015, by = c("core_no", "layer_no" = "layer_ref")) %>%
+  mutate_all(as.character)
+
+```
+```{r}
+temp_samples_loe_Jacobs_dr <- read_excel(paste0(source_directory, "samples/Loe_Jacobs_samples_dr.xlsx"))  %>%
+  mutate_all(as.character)  %>% 
+  separate(property, c("property", "sample_no"), sep=" nr. ") %>%
+  dplyr::filter(!is.na(property))
+
+temp_samples_loe_Jacobs_dr_remove_missing = as.data.frame(t(apply(temp_samples_loe_Jacobs_dr,1, function(x) { return(c(x[!is.na(x)],x[is.na(x)]) )} )))
+colnames(temp_samples_loe_Jacobs_dr_remove_missing) = colnames(temp_samples_loe_Jacobs_dr) 
+
+temp_samples_loe_dr <- temp_samples_loe_Jacobs_dr_remove_missing  %>%
+  select_if(~sum(!is.na(.)) > 0) %>%
+  na_if("-") %>%
+  dplyr::filter(str_length(property) <50) %>%
+  #dplyr::filter(!grepl("-", property)) %>%
+  mutate_all(funs(gsub("^-", "", .))) %>%
+  mutate_all(funs(gsub("[\\.:]$", "", .))) %>%
+  mutate_all(as.character) %>%
+  fill(sample_no) %>%
+  gather(contains("value"), key=x, value=value)  %>%
+  dplyr::filter(!is.na(value)) %>%
+  dplyr::filter(!is.na(property)) %>%
+  group_by(sample_no, x) %>%
+  spread(property, value) %>%
+  normalize()  
+
+
+
+
+
+
+
+```
+
+
+
+
+
+```{r }
+flat_cores <- bind_rows(temp_cores_2018, temp_cores_fl_2015) %>%
+  mutate(lot = ifelse(is.na(lot), "main site", lot)) %>%
+  left_join(temp_gps_cores, by = c("site", "lot", "year", "core_no")) %>%
+  separate(depth_cm, c("depth_start", "depth_end"), sep = "-") %>%
+  mutate(northing = coalesce(north, northing)) %>%
+  mutate(easting = coalesce(east, easting)) %>%
+  select(site, lot, year, core_no, layer_no, northing, easting, depth_start, depth_end, description, remarks) 
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the lot.

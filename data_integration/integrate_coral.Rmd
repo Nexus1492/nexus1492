@@ -1,0 +1,58 @@
+---
+title: "coral"
+output: html_document
+---
+
+```{r, echo=FALSE}
+
+temp_atr_coral <- read_excel(paste0(source_directory, "finds/coral/atr_coral.xlsx"), col_types = "text") %>% 
+   normalize("Anse Trabaud") %>%
+  rename(fnd = find_number)
+
+temp_ca_coral_16_17_18 <- read_delim(paste0(source_directory, "finds/coral/ca_coral_16_17_18.csv"), delim=";") %>% 
+  normalize ("El Carril", convert_year = TRUE)
+
+temp_fl_coral_16 <- read_delim(paste0(source_directory, "finds/coral/fl_coral_16.csv"), delim=";") %>% 
+  normalize("El Flaco") %>%
+  rename(fnd = find_number) %>%
+  select(-zssq)  
+
+temp_lp_coral <- read_excel(paste0(source_directory, "finds/coral/lp_coral.xlsx"), col_types = "text") %>% 
+  normalize("La Poterie")
+
+temp_ll_coral <- read_excel(paste0(source_directory, "finds/coral/ll_coral.xlsx"), col_types = "text") %>% 
+  normalize ("La Luperona")
+
+temp_ec_coral <- read_excel(paste0(source_directory, "finds/ec_finds.xlsx")) %>%
+  dplyr::filter(grepl("^CO", vondst_s_categorie)) %>%
+  mutate(remarks = coalesce(vondst_s_opmerking, vondst_v_opmerking)) %>%
+  select(fnd = vondstnr, category = vondst_s_categorie, total_weight = gewicht, total_number = aantal, remarks)
+
+temp_mor_coral <- read_excel(paste0(source_directory, "finds/mor_finds.xls")) %>%
+  normalize() %>%
+  dplyr::select(zone, sector, square, layer, contains("coral")) %>%
+  rename(total_weight =  coral_g, total_number = coral_n)
+
+temp_aag_coral_96 <- read_excel(paste0(source_directory, "finds/aag_finds_96.xlsx")) %>%
+  normalize("Anse a la Gourde") %>% 
+  select(coordx, coordy, total_weight = koraal)
+
+
+temp_coc_coral <- read_excel(paste0(source_directory, "find_lists/coc_find_list.xls")) %>%
+  normalize("Cocoyer St. Charles") %>%
+  select(site, fnd = feature, contains("layer")) %>%
+  gather(layer, finds, contains("layer")) %>%
+  mutate(layer = gsub("layer_", "", layer)) %>%
+  dplyr::filter(grepl("coral?", finds, ignore.case = TRUE)) %>%
+  select(-finds)
+
+
+```
+
+```{r, echo=FALSE}
+
+flat_coral <- bind_rows(temp_ca_coral_16_17_18,temp_fl_coral_16,temp_lp_coral, temp_ll_coral, temp_atr_coral, temp_ec_coral, temp_mor_coral, temp_coc_coral, temp_aag_coral_96)  %>%
+  mutate(material = "coral") %>%
+  rename(total_number = number)
+
+```

@@ -1,0 +1,59 @@
+---
+title: "generate_metadata"
+output: html_document
+---
+
+```{r }
+
+tables <- list("c14_calibrated", "c14_lab", "reference", "ceramics_bulk", "ceramics_individual")
+
+metadata_total <- tibble()
+for (table_name in tables) {
+  
+  table <- eval(parse(text = table_name)) %>% 
+    mutate_all(funs(type.convert(., as.is = TRUE, numerals = "warn.loss"))) %>%
+    mutate_all(funs(replace(., is.na(.), 0))) %>%
+    mutate_all(funs(gsub(" $", "", .)))  %>%
+    mutate_all(funs(gsub("^ ", "", .))) %>%
+    select(-contains("id"))
+
+  linker <- tibble(var_name = colnames(table), 
+                   var_desc = rep("", length(colnames(table))),
+                   type = sapply(table, class)) %>%
+    dplyr::filter(var_name != "id") %>%
+    dplyr::filter(!grepl("_id", var_name)) %>%
+    mutate(var_type = case_when(
+      grepl("numeric", type) ~ 0,
+      grepl("character", type) ~ 1,
+      TRUE ~ 0
+    )) 
+  
+  metadata <- linker %>%
+    mutate(table_name = table_name)
+  
+  metadata_total <- bind_rows(metadata_total, metadata)
+
+}
+
+write.xlsx(metadata_total, paste0(metadata_directory, "metadata_", Sys.Date(), ".xlsx"))
+
+
+```
+
+
+```{r}
+metadata_tables <- read_excel(paste0(metadata_directory, "metadata.xlsx", sheet = "tables")) %>%
+  mutate(id = 1:n())
+
+tablemetadata_linking_table <- metadata_tables %>%
+  select(id, name)
+
+metadata_columns <- read_excel("J:/ResearchData/ARCH/Nexus1492 Data Management/DATA_SETS/Integration/metadata/metadata.xlsx",  sheet = "columns") %>%
+  mutate(id = 1:n()) %>%
+  create_foreign_key(tablemetadata_linking_table, by = c("db_table" = "name"), var = "metadata_tables")
+
+to_do <- readtext(paste0(metadata_directory, "to_do.txt"))
+
+```
+
+

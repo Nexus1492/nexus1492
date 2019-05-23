@@ -1,0 +1,187 @@
+---
+title: "findlist integration"
+output: html_document
+---
+
+
+
+```{r}
+
+temp_ca_find_list_16_17_18 <- read_excel(paste0(source_directory, "find_lists/ca_find_list_16_17_18.xlsx"), col_types = "text")  %>% 
+  mutate(date = as.Date(as.numeric(date), origin = "1899-12-30")) %>%
+  mutate(year = gsub("-.*", "", date)) %>%
+  select(-date) %>%
+  normalize("El Carril") 
+
+temp_fl_find_list_13 <- read_excel(paste0(source_directory, "find_lists/fl_find_list_13.xlsx"), col_types = "text")  %>% 
+  normalize("El Flaco") %>%
+  mutate(year = "2013") %>%
+  rename(data_quality = meta_remarks)
+
+
+temp_fl_find_list_14 <- read_excel(paste0(source_directory, "find_lists/fl_find_list_14.xlsx"), col_types = "text")  %>% 
+  normalize("El Flaco") %>%
+  rename(fnd = find_number) %>%
+  mutate(year = "2014")
+
+temp_fl_14_find_missing <- read_excel(paste0(source_directory, "find_lists/finds_flaco14_missing.xlsx"), col_types = "text")  %>% 
+  normalize("El Flaco") %>%
+  mutate(year = "2014") %>%
+  mutate(fnd = as.character(round(as.numeric(fnd), 0)))
+
+temp_fl_find_list_15_16 <- read_excel(paste0(source_directory, "find_lists/fl_find_list_15_16.xlsx"), col_types = "text")  %>% 
+  mutate(date = as.Date(as.numeric(date), origin = "1899-12-30")) %>%
+  mutate(year = gsub("-.*", "", date)) %>%
+  rename(canceled = cancelled) %>%
+  select(-date) %>% 
+  normalize("El Flaco") 
+
+temp_lp_find_list <- read_excel(paste0(source_directory, "find_lists/lp_find_list.xlsx"), col_types = "text")   %>% 
+  mutate(date = as.Date(as.numeric(date), origin = "1899-12-30")) %>%
+  mutate(year = gsub("-.*", "", date)) %>%
+  select(-date)%>% 
+  normalize ("La Poterie") 
+
+temp_ll_find_list <- read_excel(paste0(source_directory, "find_lists/ll_find_list.xlsx"), col_types = "text")  %>% 
+  normalize ("La Luperona") %>%
+  rename(fnd = find_number) %>%
+  separate(z_s_s, c("zone", "sector", "square")) %>%
+  select(-material) %>%
+  distinct(zone, sector, square, layer, .keep_all = TRUE)  %>%
+  select(-starts_with("x_")) %>%
+  mutate(total_weight = weight) %>%
+  select(-weight) %>%
+  mutate(date = gsub("'", "20", date)) %>%
+  mutate(year = gsub(".*-", "", date)) 
+
+temp_ec_find_list <- read_excel(paste0(source_directory, "find_lists/ec_find_list.xlsx"))  %>%
+   mutate_all(as.character) %>%
+   select(fnd = vondstnr, unit = put, square, layer, fill = vulling, remarks = opmerking) %>%
+   separate(unit, c("zone", 'sector'))  
+
+
+temp_ar_find_list <- read_excel(paste0(source_directory, "find_lists/ar_find_list.xlsx")) %>%
+  normalize("Argyle") %>%
+  select(site, fnd, unit, zone, sector, square, layer, remarks)
+
+temp_mor_find_list <- read_excel(paste0(source_directory, "find_lists/mor_find_list.xlsx")) %>%
+  normalize("Morel") %>%
+  select(site, fnd = pn_number, zone, sector, square, level)
+
+temp_sw_find_list <- read_excel(paste0(source_directory, "find_lists/sw_find_list.xls")) %>%
+  normalize("Spaanse water") %>%
+  separate(zone_sector_square, c("zone", "sector", "square")) %>%
+  select(site, fnd = vondstnr, unit = put, zone, sector, square, layer = laag, remarks = opmerkingen) 
+
+temp_coc_find_list <- read_excel(paste0(source_directory, "find_lists/coc_find_list.xls")) %>%
+  normalize("Cocoyer St. Charles") %>%
+  select(site, fnd = feature,  remarks = comments, contains("layer")) %>%
+  gather(layer, finds, contains("layer")) %>%
+  mutate(layer = gsub("layer_", "", layer))
+
+temp_aae_find_list <- read_excel(paste0(source_directory, "find_lists/aae_beams.xlsx")) %>%
+  normalize("Anse a l'Eau") %>%
+  select(site, fnd = id, unit = testpit, zone, sector, square, layer, depth, remarks) %>%
+  na_if("999") %>%
+  distinct()
+
+temp_aag_find_list <- read_excel(paste0(source_directory, "find_lists/aag_find_list.xlsx")) %>%
+  normalize("Anse a la Gourde") %>%
+  select(site, fnd = pn_number, zone, sector, square, level, remarks = additional_remarks) %>%
+  na_if("0") %>%
+  mutate(level = as.character(round(as.numeric(level))))
+
+temp_des_find_list <- read_excel(paste0(source_directory, "find_lists/des_find_list.xls")) %>%
+  normalize() %>%
+  select(site, fnd = drac_id, unit, layer, finds= category, remarks)
+
+temp_beng_find_list <- read_excel(paste0(source_directory, "find_lists/beng_find_list_15.xls")) %>%
+  mutate_all(as.character) %>%
+  clean_names(case = "snake") %>%
+  select(fnd = find_no, unit, z_s_sq, layer = abr_lay, feature, finds = category, sampled, remarks) %>%
+  separate(z_s_sq, c("zone", "sector", "square"))
+
+
+temp_find_lists_from_ceramics <- read_csv(paste0(source_directory, "finds/ceramic/20190131_archeology_nexus1492_nl_layer.csv")) %>% 
+  mutate_all(as.character) %>%
+   clean_names(case = "snake") %>%
+   mutate(excavation = site_mapping[excavation]) %>%
+  dplyr::filter(grepl("(Anse Trabaud)|(Argyle)|(The Bottom)|(Brighton Beach)|(Friars Bay)|(Giraudy)|(Godet)|(Grande Anse)|(Anse Duquerry)|(Morne Cybele)|(Pointe Canot)|(Pointe Helleux)|(Hope Estate)|(Kelb?y.s Ridge)|(La Ressource)|(	Lavoutte)|(Morne Cybel)|(	Sitio de Pepe)|(Spring Bay)", excavation)) %>%
+  separate(zn_sr_sq_lr_unit, c("zone","sector","square","layer","unit"), sep = " / ") %>%
+  select(site = excavation, fnd = find_nr, zone, sector, square, layer, unit)
+
+
+
+
+
+  
+```
+
+```{r echo=FALSE}
+
+flat_find_lists <- bind_rows(temp_ca_find_list_16_17_18,temp_fl_find_list_14,temp_fl_find_list_15_16, temp_lp_find_list, temp_ll_find_list,temp_fl_find_list_13, temp_fl_14_find_missing, temp_ec_find_list, temp_ar_find_list, temp_aag_find_list, temp_des_find_list, temp_coc_find_list, temp_beng_find_list) %>% 
+  rename (feature_fill = feaure_fill,
+          pleurondonte_sp_collected_30_percent = shell_30_percent) %>% 
+  select(-category, -sitefout, -field1, -sitefout, -do_not_wash, -box, -test, -sitefnd, -category, -island) %>%
+  rename(ceramics_present = ce,
+    lithic_present = li, 
+    shell_present = sh,
+    special_finds_present = sp,
+    coral_present = co,
+    animal_bone_present = ab,
+    human_bone_present = hb,
+    charcoal_present = ch,
+    other_finds_present = ot,
+    griddle_present = gr,
+    colonial_ceramic_present  = cc) %>%
+    mutate(feature = coalesce(feature,
+                              feature_nr)) %>%
+    select(-feature_nr) %>%
+    mutate(feature = gsub("F", "", feature))  %>%
+    mutate(feature = gsub("-0+", "-", feature)) %>%
+    distinct(site, fnd, .keep_all = TRUE)
+
+```
+
+#split finds
+```{r}
+
+# ll_ceramics <- ll_find_list %>%
+#   filter(grepl("(ceramics)|(griddle)", material))
+# 
+# ll_bone_fauna <- lup_find_list %>%
+#   filter(grepl("(fauna)|(bone)", material))
+# 
+# ll_shell <- lup_find_list %>%
+#   filter(grepl("shell", material))
+# 
+# ll_stone <- lup_find_list %>%
+#   filter(grepl("stone", material))
+# 
+# ll_charcoal <- lup_find_list %>%
+#   filter(grepl("charcoal", material))
+# 
+# ll_coral <- lup_find_list %>%
+#   filter(grepl("cor?al", material))
+# 
+# ll_other <- lup_find_list %>%
+#   filter(!grepl("coral", material)) %>%
+#   filter(!grepl("(ceramics?)|(griddle)", material))%>%
+#   filter(!grepl("(fauna)|(bone)", material))%>%
+#   filter(!grepl("shell", material))%>%
+#   filter(!grepl("stone", material))%>%
+#   filter(!grepl("charcoal", material))
+# 
+# write.xlsx(ll_coral, paste0(source_directory, "finds/", "coral/", "ll_coral.xlsx"))
+# write.xlsx(ll_ceramics, paste0(source_directory, "finds/", "ceramic/", "ll_ceramics.xlsx"))
+# write.xlsx(ll_bone_fauna, paste0(source_directory, "finds/", "bone/", "ll_bone_faunas.xlsx"))
+# write.xlsx(ll_shell, paste0(source_directory, "finds/", "shell/", "ll_shell.xlsx"))
+# write.xlsx(ll_stone, paste0(source_directory, "finds/", "stone/", "ll_stone.xlsx"))
+# write.xlsx(ll_charcoal, paste0(source_directory, "finds/", "charcoal/", "ll_charcoal.xlsx"))
+# write.xlsx(lup_other, paste0(source_directory, "finds/", "other/", "ll_other.xlsx"))
+
+
+```
+
+
+

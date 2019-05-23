@@ -1,0 +1,88 @@
+---
+title: "archaeometry"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+petrography <- list.files(paste0(source_directory, "specialist/petrography"), full.names = TRUE, pattern = "\\.csv") %>%
+  map(read_delim, delim = ";") %>%  
+  lapply(function(x) mutate_all(x, funs('as.character'))) %>%
+  reduce(bind_rows) %>%
+  na_if("N/A") %>% na_if("NA") %>% 
+  mutate(material = tolower(Material_L1)) %>%
+  mutate(sub_material = tolower(Material_L2)) %>%
+  discard(~all(is.na(.x))) %>%
+  normalize()
+  #normalize() %>%
+  #batch_rename("^x", "") %>%
+  #mutate_all(as.character()) %>%
+  #mutate(id = 1:n()) %>%
+  #rename(site = find_location_l3, area = find_location_l1) %>%
+  #mutate(artefact = tolower(ifelse(!is.na(artefact_l2), artefact_l2, artefact_l1))) %>%
+  #mutate(material = tolower(ifelse(!is.na(material_l2), material_l2, material_l1))) %>%
+  #select(-matches("_l[0-9]"))
+
+```
+
+```{r}
+temp_isotopes_humans <- read_delim(paste0(source_directory, "specialist/isotopes/isotopes_humans.csv"), delim=";") %>%
+  normalize() 
+
+temp_isotopes_animals <- read_delim(paste0(source_directory, "specialist/isotopes/isotopes_animals.csv"), delim=";") %>%
+  normalize() 
+
+temp_isotopes_bioavailable <- read_delim(paste0(source_directory, "specialist/isotopes/isotopes_bioavailable.csv"), delim=";") %>%
+  normalize() 
+
+isotopes <- bind_rows(temp_isotopes_humans, temp_isotopes_animals, temp_isotopes_bioavailable) %>%
+  rename(sample_id_lab = vu_id, sample_id_researcher = sample)  %>%
+  select(-number, -taxa) %>%
+  mutate(region = gsub("Dom.* Rep.*", "Dominican Republic", region))  %>%
+  #mutate(fnd = ifelse(grepl("FNR", sample_id_researcher), gsub("FNR\\.", "", sample_id_researcher), NA))  %>%
+  #mutate(fnd = ifelse(grepl("^F[0-9]", sample_id_researcher), gsub("F", "", gsub("[\\.\\-]0*", "-", sample_id_researcher)), NA)) %>%
+  mutate(culture_certain = ifelse(grepl("\\?", culture), FALSE, TRUE))  %>%
+  mutate_all(funs(gsub("\\?", "", .))) %>%
+  rename(object_id = sample_id_researcher, species = type, sub_material = element, sub_sub_material = elem_number) %>%
+  rename(sample_id = sample_id_lab) %>%
+  rename(x87sr_86sr_r1_uncorrected = x87sr_86sr,
+         x87sr_86sr_r1_2se = x87sr_86sr_1,    
+         x87sr_86sr_r1_corrected = x87sr_86sr_2,    
+         x87sr_86sr_r2_uncorrected = x87sr_86sr_3,    
+         x87sr_86sr_r2_2se = x87sr_86sr_4,    
+         x87sr_86sr_r2_corrected = x87sr_86sr_5,
+          x87sr_86sr_r2_corrected = x87sr_86sr_5
+  ) %>%
+  select(-matches("^x[0-9][0-9]$"))%>%
+  mutate(collection = ifelse(grepl("\\*", site), site, NA)) %>%
+  mutate(site = ifelse(grepl("\\*", site), NA, site)) %>%
+  dplyr::filter(!is.na(sample_id))
+  
+```
+
+```{r}
+sample_raw <- bind_rows(isotopes, petrography) %>%
+  select(-matches("[0-9]")) %>%
+  select(-matches("^[a-z][a-z]?$")) %>%
+  mutate(id = 1:n()) 
+ 
+```
+
+```{r}
+measurements_raw <- bind_rows(isotopes) %>%
+  select(matches("[0-9]"), matches("^[a-z]a-z]?$")) %>%
+  mutate(sample_id = 1:n()) %>%
+  gather(key, value, c(matches("_r[0-9]_"))) %>%
+  mutate(run = ifelse(grepl("_r1_", key), "1", "2"))  %>%
+  mutate(correction = ifelse(grepl("uncorrected", key), "uncorrected", NA))  %>%
+  mutate(correction = ifelse(grepl("corrected", key) & is.na(correction), "corrected", correction))  %>%
+  mutate(correction = ifelse(grepl("2se", key) & is.na(correction), "2se", correction))  %>%
+  mutate(substance = gsub("(.*)_r[0-9]_.*", "\\1", key)) %>%
+  select(-key)
+ 
+
+```
+

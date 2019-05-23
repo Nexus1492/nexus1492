@@ -1,0 +1,166 @@
+---
+title: "featurelist integration"
+output: html_document
+---
+
+```{r}
+temp_ca_feature_lists <- list.files(paste0(source_directory, "feature_lists/Carril"), full.names = TRUE, pattern = "\\.xlsx")
+temp_fl14_feature_lists <- list.files(paste0(source_directory, "feature_lists/Flaco/2014"), full.names = TRUE, pattern = "\\.csv")
+temp_fl15_16_feature_lists <- list.files(paste0(source_directory, "feature_lists/Flaco/2015_2016"), full.names = TRUE, pattern = "\\.xlsx") 
+temp_lp_feature_lists <- list.files(paste0(source_directory, "feature_lists/La Poterie"), full.names = TRUE, pattern = "\\.xlsx")
+
+
+temp_fl13_feature_list <- read_delim(paste0(source_directory, "feature_lists/Flaco/fl13_feature_list.csv"), 
+    ";", escape_double = FALSE, trim_ws = TRUE)  %>% 
+  normalize %>%
+  mutate(site = "El Flaco")
+
+temp_fl_ca_lp_feature_types <- read_excel(paste0(source_directory, "feature_types/fl_ca_lp_feature_types.xlsx"), col_types = "text") %>%
+  mutate(ID = as.character(ID))
+
+temp_ca_feature_list <- temp_ca_feature_lists %>%
+  map(read_excel) %>%  
+  lapply(function(x) mutate_all(x, funs('as.character'))) %>%
+  reduce(bind_rows) %>%
+  clean_names(case = "snake") %>%
+ mutate(feature_number = coalesce(feature_number_s04, feature_number_s05, feature_number_s55, feature_number_s08,  feature_number_s12, feature_number_s13, feature_number_s14, feature_number_s15,
+feature_number_s20, feature_number_s22, feature_number_s25_z01, feature_number_s25, 
+feature_number_s27, feature_number_s29, feature_number_s32, feature_number_s33,  
+feature_number_s34, feature_number_s35_z01, feature_number_s36, feature_number_s37,  
+feature_number_s38, feature_number_s39, feature_number_s40, feature_number_s45,  
+feature_number_s46, feature_number_s47, feature_number_s48, feature_number_s49,  
+feature_number_s54, feature_number_s56, feature_number_s58, feature_number_s60, 
+feature_number_s63, feature_number_s64, feature_number_s65, feature_number_s68, 
+feature_number_s68_z80, feature_number_s69, feature_number_s70, feature_number_s73_z81,
+feature_number_s78_z80, feature_number_s78, feature_number_s79, feature_number_s82, 
+feature_number_s83, feature_number_s85, feature_number_s86, feature_number_s87, 
+feature_number_s89, feature_number_s90, feature_number_s91_z81, feature_number_s92,  
+feature_number_s94, feature_number_s98, feature_number_s99, feature_number_s91, 
+feature_number_s74, feature_number_z92_s91)) %>%
+select(-contains("feature_number_")) %>%
+  mutate(site = "El Carril") %>%
+left_join(temp_fl_ca_lp_feature_types, by = c("type" = "ID")) %>%
+mutate(type = type.y) %>%
+select(-type.y)
+
+
+
+temp_fl_feature_list_14 <- temp_fl14_feature_lists %>%
+  map(read_delim, delim = ";", escape_double = FALSE, trim_ws = TRUE) %>%  
+  lapply(function(x) mutate_all(x, funs('as.character'))) %>%
+  reduce(bind_rows) %>%
+  clean_names(case = "snake") %>%
+  mutate(site = "El Flaco")
+
+temp_fl_feature_list_15_16 <- temp_fl15_16_feature_lists %>%
+  map(read_excel) %>%  
+  lapply(function(x) mutate_all(x, funs('as.character'))) %>%
+  reduce(bind_rows) %>%
+  clean_names(case = "snake") %>%
+ mutate(feature_number = coalesce(feature_number_s04,feature_number_s06,feature_number_s13,feature_number_s14,    
+feature_number_s15,feature_number_s21,feature_number_s22,feature_number_s25,    
+feature_number_s32,feature_number_s34,feature_number_s35,feature_number_s36,    
+feature_number_s37,feature_number_s38,feature_number_s44,feature_number_s45,    
+feature_number_s46,feature_number_s47,feature_number_s48,feature_number_s54,    
+feature_number_s55,feature_number_s56,feature_number_s63,feature_number_s64,    
+feature_number_s65,feature_number_s67,feature_number_s68,feature_number_s73,    
+feature_number_s82,feature_number_s83,feature_number_s94,feature_number_z73_s05,
+feature_number_z73_s33,feature_number_z73_s34,feature_number_z73_s35, feature_number_s02, feature_number_s03,feature_number_s05, feature_number_s74, feature_number_s53)) %>%
+select(-contains("feature_number_")) %>%
+mutate(site = "El Flaco") %>%
+left_join(temp_fl_ca_lp_feature_types, by = c("type" = "ID")) %>%
+mutate(type = type.y) %>%
+select(-type.y)
+
+temp_lp_feature_list <- temp_lp_feature_lists %>%
+  map(read_excel) %>%
+  lapply(function(x) mutate_all(x, funs('as.character'))) %>%
+  reduce(bind_rows) %>%
+  clean_names(case = "snake") %>%
+  mutate(feature_number = coalesce(feature_number_s85, 
+feature_number_s40, feature_number_s41, feature_number_s50, feature_number_s51, feature_number_s52, feature_number_s60, feature_number_s61, feature_number_s62, feature_number_s63, feature_number_s70, feature_number_s71, feature_number_s82)) %>%
+select(-contains("feature_number_")) %>%
+mutate(site = "La Poterie") %>%
+left_join(temp_fl_ca_lp_feature_types, by = c("type" = "ID")) %>%
+mutate(type = type.y) %>%
+select(-type.y)
+
+temp_lu_feature_list <- read_excel(paste0(source_directory, "feature_lists/lu_feature_list.xlsx")) %>%
+  normalize("La Luperona") %>%
+  mutate(site = "La Luperona", feature_number = gsub(".*-", "", feature)) %>%
+  mutate_all(funs(gsub("^x$", TRUE, .))) %>%  
+  select(-meta_remarks, -feature) 
+
+temp_aag_feature_list <- read_excel(paste0(source_directory, "feature_lists/aag_feature_list.xlsx")) %>%
+  normalize("Anse a la Gourde") %>%
+  select(site, feature_number, type = interpretation, shape, width = width_cm, diameter = diameter_cm, depth = depth_cm)
+
+temp_ec_feature_list <- read_excel(paste0(source_directory, "feature_lists/ec_feature_list.xlsx")) %>%
+  mutate_all(as.character) %>%
+  mutate(site = "El Cabo") %>%
+  select(site, unit = put, feature_number = spoor, type, shape = vorm, diameter, depth = diepte, remarks = opmerking) %>%
+  separate(unit, c("zone", "sector"))
+
+temp_aae_find_list <- read_excel(paste0(source_directory, "find_lists/aae_beams.xlsx")) %>%
+  normalize("Anse a l'Eau") %>%
+  select(site, fnd = id, unit = testpit, zone, sector, square, layer, depth, remarks)
+
+```
+
+
+```{r echo=FALSE}
+
+flat_feature_lists <- dplyr::bind_rows(temp_ca_feature_list, temp_fl13_feature_list, temp_fl_feature_list_14, temp_fl_feature_list_15_16, temp_lp_feature_list, temp_lu_feature_list, temp_aag_feature_list, temp_ec_feature_list, temp_aae_find_list) %>%
+  normalize() %>%
+  select_if(~sum(!is.na(.)) > 0) %>%
+  mutate(cancelled = coalesce(canceled, cancelled)) %>%
+  mutate(zssq = coalesce(zssq, zone_sector_sq)) %>%
+  mutate(site = coalesce(site, site_c)) %>%
+  select(-zone_sector_sq, -canceled, -site_c, -site_fout) %>%
+  mutate(sector = gsub(".*_s", "F", sector)) %>%
+  mutate(suffix = sector) %>%
+  unite(feature_number, suffix, feature_number, sep = "-") %>%
+  mutate(type = coalesce(feature_type, type)) %>%
+  mutate(type = str_to_lower(type)) %>%
+  mutate(type = gsub("^ph$","posthole",type)) %>%
+  mutate(type = gsub("^pi$","pit",type)) %>%
+  mutate(type = gsub("^pt$","pit",type)) %>%
+  mutate(type = gsub("\\?","",type)) %>%
+  mutate(type = gsub("^ht$","hearth",type))  %>%
+  mutate(type = gsub("^bur$","burial",type)) %>%
+  mutate(type = gsub("^dis$","discoloration",type)) %>%
+  mutate(type = gsub("^rec$","recent disturbance",type)) %>%
+  mutate(type = gsub("^dp$","depression",type)) %>%
+  mutate(type = gsub("^ls$","living surface",type)) %>%
+  mutate(type = gsub("^pm$","post hole mold",type)) %>%
+  mutate(type = gsub("^ov$","oven",type)) %>%
+  mutate(type = gsub("^dt$","ditch",type)) %>%
+  mutate(type = gsub("^pr$","post row",type)) %>%
+  mutate(type = gsub("^bt$","bioturbation",type)) %>%
+  mutate(type = gsub("^mid$","midden",type))  %>%
+  mutate(type = gsub("^nat$","natural",type))  %>%
+  mutate(type = gsub("^can$","can - unknown",type))  %>%
+  mutate(type = ifelse(is.na(type), ifelse(grepl("^posthole$", remarks), "posthole", type), type)) %>%
+  mutate(ts_name = gsub("pt\\.? ?","",ts_name))  %>%
+  rename(ts_point_name = ts_name) %>%
+  mutate(associated_features = coalesce(associated_with_feature, assoc_with_feature)) %>%
+  select(-associated_with_feature, -assoc_with_feature) %>%
+  mutate(associated_features = gsub("F", "", associated_features)) %>%
+  mutate(type = coalesce(type, feature_type)) %>%
+  mutate(feature_number = coalesce(feature_number, feature)) %>%
+  select(-feature, -feature_type) %>%
+  mutate(year = gsub("([0-9][0-9][0-9][0-9])-[0-9][0-9]?-[0-9][0-9]?", "\\1", date)) %>%
+  mutate(year = gsub("[0-9][0-9]?-[0-9][0-9]?-([0-9][0-9][0-9][0-9])", "\\1", year)) %>%
+  mutate(year = gsub("210", "201", year)) %>%
+  mutate(year = gsub("[^0-9]+", "", year)) %>%
+  mutate(level = gsub("br", "bedrock", level, ignore.case = TRUE)) %>%
+  separate(zssq, c("zone2", "sector2", "square2"), "-", extra = "drop") %>% 
+  mutate(zone = coalesce(zone, zone2)) %>%
+  mutate(sector = coalesce(sector, sector2)) %>%
+  mutate(square = coalesce(square, square2)) %>%
+  select(-ends_with("2")) %>%
+  select(-date, -associated_features) %>%
+  mutate(feature_number = gsub("-0+", "-", feature_number)) 
+
+```
+

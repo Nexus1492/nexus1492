@@ -1,0 +1,33 @@
+---
+title: "export"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r }
+flat_ceramics %>%
+  dplyr::filter(grepl("Gourde", site)) %>%
+  write.xlsx(paste0(output_directory, "specific/aag_for_simone_front.xlsx"))
+
+
+ceramics_individual_flat %>%
+  dplyr::filter(grepl("Gourde", site)) %>%
+  write.xlsx(paste0(output_directory, "specific/aag_for_simone_back.xlsx"))
+ 
+
+```
+
+```{r}
+
+temp_mor_shell_new_new %>%
+  write.csv(paste0(output_directory, "specific/mor_shell_adapted_for_kaz.csv"))
+
+```
+
+
+

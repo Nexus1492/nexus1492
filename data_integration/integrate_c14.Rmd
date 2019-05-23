@@ -1,0 +1,57 @@
+---
+title: "c14.Rmd"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r echo=FALSE}
+temp_c14_raw_beta <- read_xlsx(paste0(source_directory, "c14/all_beta_analytic_added_context_wk.xlsx")) %>%
+  clean_names() %>%
+  mutate_all(as.character) %>%
+  select(-irms_d13c, -irms_d15n , -cn, -wt_percent_c, -wt_percent_n, -wt_percent_col, -irms_d18o, -service, -received, -due, -report_completed, -percent_modern_carbon_p_mc, -d14c, -fraction_modern) %>%
+  rename(lab_id = beta_id, calender_calibration = calendar_calibration_95_4_percent_probability) %>%
+  mutate(calender_calibration = gsub(".*%) ", "", calender_calibration))  %>%
+  mutate(calender_calibration = gsub(") .*", ")", calender_calibration)) %>%
+  rename(material = material_pretreatment) %>%
+  mutate(material = gsub("\\):.*", "", material))%>%
+  mutate(material = gsub("\\(", "", material)) %>%
+  mutate(material = gsub("organic material submitted as", "", material)) %>%
+  mutate(material = gsub("\"", "", material))  %>%
+  mutate(lab ="Beta Analytic")
+
+
+temp_c14_raw_groningen <- read_excel(paste0(source_directory, "c14/ALL GrN dates.xls")) %>%
+  clean_names() %>%
+  rename(lab_id = gr_n, wt_c = c_percent, irms_d13c = d13c, fraction_modern = fraction, island = is_land, sample_id = samplename) %>%
+  unite(conventional_age, c(age_bp, sigma), sep = " +/- ") %>%
+  mutate_all(as.character)%>%
+  mutate(lab= "Groningen", mutate site = gsub(" .*", "", sample_id))
+
+flat_c14_lab <- bind_rows(temp_c14_raw_beta, temp_c14_raw_groningen) %>%
+  mutate(sample_id_adapted = sample_id) %>%
+  mutate(sample_id_adapted = gsub("fi?nd? ?n?r?", "---", sample_id_adapted, ignore.case = TRUE))   %>%
+  mutate(sample_id_adapted = gsub("vo?nd?st? ?nr", "---", sample_id_adapted, ignore.case = TRUE)) %>%
+  mutate(sample_id_adapted = gsub("frn", "---", sample_id_adapted, ignore.case = TRUE))%>%
+  mutate(sample_id_adapted = gsub("F ?([^A-Za-z\\-]+)", "---\\1", sample_id_adapted, ignore.case = TRUE))%>%
+  mutate(sample_id_adapted = gsub("17/", "---", sample_id_adapted, ignore.case = TRUE)) %>%
+  mutate(sample_id_adapted = gsub("ATR", "ATR---", sample_id_adapted, ignore.case = TRUE))%>%
+  separate(sample_id_adapted,  c("remainder", "fnd"), sep="---") %>%
+  mutate(fnd = ifelse(is.na(fnd), findnr, fnd)) %>%
+  mutate(fnd = gsub("[^0-9].+", "", fnd))
+
+flat_c14_calibrated <- read_excel(paste0(source_directory, "c14/table c14 calibrated formatted.xls")) %>%
+    clean_names() %>%
+    separate(date_1_sigma, c("date_1_sigma_1", "date_1_sigma_2", "date_1_sigma_3", "date_1_sigma_4"), sep = " ?/ ?") %>%
+      separate(date_2_sigma, c("date_2_sigma_1", "date_2_sigma_2", "date_2_sigma_3", "date_2_sigma_4"), sep = " ?/ ?") %>%
+  gather(variable,value, -id)  %>%
+  mutate(group = extract_numeric(variable)) %>%
+  mutate(variable =  gsub("\\d","",x = variable)) %>%
+  spread(variable,value)
+
+
+```

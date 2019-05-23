@@ -1,0 +1,62 @@
+---
+title: "integrate references"
+output: html_document
+---
+
+#
+```{r }
+temp_references_file <-paste0(source_directory, "reference/Caribbean_Bibliography NEW.xml")
+temp_references_xml <- xmlParseDoc<-xmlParse(temp_references_file)
+temp_references_raw <- xmlToDataFrame(getNodeSet(temp_references_xml,'//*/record'))
+temp_names <- read_csv(paste0(source_directory, "helper/english_first_names.csv"))
+temp_names_pattern <- paste(unlist(temp_names$name), collapse = " |")
+
+
+```
+
+
+```{r }
+temp_endnote <- temp_references_raw %>%
+  normalize() %>%
+  select(-which(colMeans(is.na(.)) > 0.5)) %>%
+  #filter(!is.na(contributors)) %>%
+  select(-contains("custom")) %>%
+  mutate(dates = gsub("([0-9][0-9][0-9][0-9]).*", "\\1", dates)) %>%
+  mutate(multiple = case_when (
+    grepl(",.*,.*,", contributors) ~ "et al.",
+    grepl(",.*,", contributors) ~ "and",
+   TRUE ~ "single")) %>%
+   separate(contributors, into = c("csplit1","csplit2","csplit3","csplit4","csplit5","csplit6","csplit7","csplit8","csplit9","csplit10"), sep="[;,] ?[A-Z\\.]+\\.", remove = FALSE) %>%
+  mutate(short_ref = case_when(
+    multiple == "single" ~ paste0(csplit1, " ", dates),
+    multiple == "and" ~ paste0(csplit1, " and ", csplit2, " ", dates),
+    multiple == "et al." ~ paste0(csplit1, " et al. ", " ", dates)
+ )) %>%
+  mutate(type = "general reference")  %>%
+  #filter(!grepl("NA", short_ref)) %>%
+  mutate(short_ref = gsub("[A-Z]\\.", "", short_ref)) %>%
+  #mutate(short_ref = gsub(names_pattern, replacement = "", short_ref)) %>%
+  select(-contains("csplit"), -foreign_keys, -source_app, -ref_type, -multiple ) %>%
+  rename(source_file = database, source_id = rec_number, url = urls, authors = contributors, title = titles) %>%
+  mutate_all(as.character)
+
+temp_nexus_reports <- read_delim(paste0(source_directory, "reference/nexus_reports.csv"), 
+";", escape_double = FALSE, trim_ws = TRUE)  %>%
+  normalize %>%
+  mutate(type = "nexus report")
+
+temp_nexus_publications <- read_excel(paste0(source_directory, "reference/NEXUS_list_publications_Oct_2018.xlsx"), col_types = "text") %>%
+  normalize %>%
+  rename(doi = d_o_i, authors = author_s)  %>%
+  select(-contains("º")) %>%
+  mutate(type = "nexus publication")
+```
+
+```{r}
+flat_publications <- bind_rows(temp_endnote, temp_nexus_publications, temp_nexus_reports) %>%
+  mutate(id = 1:n()) %>%
+  select(id, short_ref, authors, title, doi, type, year, site)
+
+
+```
+

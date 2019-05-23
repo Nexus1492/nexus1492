@@ -1,0 +1,21 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r }
+temp_aag_bone_ind <- read_excel(paste0(source_directory, "finds_individual/bone/aag_bone.xlsx")) %>%
+  normalize("Anse a la Gourde")
+
+```
+
+```{r}
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

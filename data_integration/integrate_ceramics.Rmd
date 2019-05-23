@@ -1,0 +1,51 @@
+---
+title: "integrate_ceramics"
+output: html_document
+---
+
+```{r}
+
+temp_ceramics_raw <- read_csv(paste0(source_directory, "finds/ceramic/20190131_archeology_nexus1492_nl_layer.csv")) %>% 
+  mutate_all(as.character) %>%
+  rename_all(gsub, pattern = '>', replacement = 'above_') %>%
+  rename_all(gsub, pattern = '<', replacement = 'below_') %>%
+   clean_names(case = "snake")
+  
+flat_ceramics <- temp_ceramics_raw  %>%
+  mutate_all(gsub, pattern = "gr\\.", replacement = '') %>%
+  mutate(body_gr = gsub(" gr.", "", body_gr)) %>%
+  mutate(rim_gr = gsub(" gr.", "", rim_gr)) %>%
+  mutate(base_gr = gsub(" gr.", "", base_gr)) %>%
+  mutate(griddle_gr = gsub(" gr.", "", griddle_gr)) %>%
+  mutate(appendage_gr = gsub(" gr.", "", appendage_gr)) %>%
+  mutate(other_gr = gsub(" gr.", "", other_gr)) %>%
+  mutate(body_below_fifty = body_below_50) %>%
+  mutate(rim_below_fifty = rim_below_50) %>%
+  mutate(basebelow_fifty = base_below_50) %>%
+  mutate(griddle_below_fifty = griddle_below_50) %>%
+  mutate(appendage_below_fifty = appendage_below_50) %>%
+  mutate(other_below_fifty = other_below_50)  %>%
+  mutate(body_above_fifty = body_above_50) %>%
+  mutate(rim_above_fiftery = rim_above_50) %>%
+  mutate(base_above_fifty = base_above_50) %>%
+  mutate(griddle_above_fifty = griddle_above_50) %>%
+  mutate(appendage_above_fifty = appendage_above_50) %>%
+  mutate(other_above_fifty = other_above_50)  %>%
+  select(-contains("50")) %>%
+  mutate(material = "ceramics") %>%
+  rename_(.dots=setNames(names(.), gsub("_gr", "_weight", names(.)))) %>%
+  rename_(.dots=setNames(names(.), gsub("_$", "", names(.)))) %>%
+  select(-contains("_styles")) %>% 
+  select(-matches("_[1-5]")) %>% 
+  select(-user, -str_level, -feature, -source, -update) %>% 
+  dplyr::rename(fnd = find_nr) %>%
+  dplyr::rename(white_slip = white_slip_slip, red_slip = red_slip_slip, rim_above_fifty = rim_above_fiftery) %>%
+  separate(zn_sr_sq_lr_unit, c("zone","sector","square","layer","unit"), sep = " / ") %>%
+  mutate(excavation = site_mapping[excavation]) %>%
+  dplyr::rename(site = excavation) %>%
+  dplyr::filter(!is.na(site))
+
+
+```
+
+

@@ -1,0 +1,24 @@
+---
+title: "integrate_burials"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+
+temp_burials_hayley_1 <- read_excel(paste0(source_directory, "burials/Burial data Caribbean.xlsx")) %>% mutate_all(as.character)  %>% clean_names()
+temp_burials_hayley_2 <- read_excel(paste0(source_directory, "burials/Burial data Caribbean (2).xlsx")) %>% mutate_all(as.character)  %>% clean_names()
+
+flat_burials <- bind_rows(temp_burials_hayley_1, temp_burials_hayley_2) %>%
+  select(-zone, easting, northing, google_maps) %>% 
+  select_if(~sum(!is.na(.)) > 0) %>%
+  distinct(site, burial_number, .keep_all = TRUE)
+
+
+```
+
+

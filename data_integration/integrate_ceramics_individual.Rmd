@@ -1,0 +1,82 @@
+---
+title: "integrate_ceramics_individual"
+output: html_document
+---
+
+```{r }
+
+temp_ceramics_individual_raw  <- read_csv(paste0(source_directory, "finds_individual/ceramic/20190131_archeology_nexus1492_nl_find.csv"), col_types = cols(.default = "c"))  %>%
+  normalize()  %>%
+  mutate(year = "") %>%
+  rename(fnd = find) %>%
+  mutate(material = "ceramics")  %>%
+  select(-user, -source, -update) %>% 
+  separate(zn_sr_sq_lr_unit, c("zone","sector","square","layer","unit"), sep = " / ") %>%
+  mutate(excavation = ifelse(!is.na(site_mapping[excavation]), (site_mapping[excavation], excavation)) %>%
+  rename(site = excavation) %>%
+  dplyr::filter(!is.na(site)) %>%
+  mutate(id = 1:n())
+
+temp_ceramics_vessel_shape  <- temp_ceramics_individual_raw %>% select(name = vessel_shape) %>% distinct() %>% dplyr::filter(!grepl("defined", name)) %>% dplyr::filter(!grepl("Other", name)) %>% dplyr::filter(!is.na(name))  %>% mutate(original_name = name) %>% separate(name, c("code", "name"), sep= " - ", extra = "merge")  %>% dplyr::filter(!is.na(name)) %>% mutate(id = 1:n())
+
+temp_ceramics_wall_profile  <- temp_ceramics_individual_raw %>% select(name = wall_profile) %>% distinct() %>% dplyr::filter(!grepl("defined", name)) %>% dplyr::filter(!grepl("Other", name)) %>% dplyr::filter(!is.na(name)) %>% dplyr::filter(!grepl("Other", name))  %>% mutate(original_name = name) %>% separate(name, c("code", "name"), sep= " - ", extra = "merge")  %>% dplyr::filter(!is.na(name))%>% mutate(id = 1:n())
+
+temp_ceramics_lip_shape     <- temp_ceramics_individual_raw %>% select(name = lip_shape) %>% distinct() %>% dplyr::filter(!grepl("defined", name)) %>% dplyr::filter(!grepl("Other", name)) %>% dplyr::filter(!is.na(name)) %>% dplyr::filter(!grepl("Other", name)) %>% dplyr::filter(!is.na(name))  %>% mutate(original_name = name) %>% separate(name, c("code", "name"), sep= " - ", extra = "merge")  %>% dplyr::filter(!is.na(name))%>% mutate(id = 1:n())
+
+temp_ceramics_rim_profile   <- temp_ceramics_individual_raw %>% select(name = rim_profile) %>% distinct() %>% dplyr::filter(!grepl("defined", name)) %>% dplyr::filter(!grepl("Other", name)) %>% dplyr::filter(!is.na(name)) %>% mutate(original_name = name)%>%  separate(name, c("code", "name"), sep= " - ", extra = "merge")  %>% dplyr::filter(!is.na(name))%>% mutate(id = 1:n())
+
+temp_ceramics_firing_color  <- temp_ceramics_individual_raw %>% select(name = firing_color) %>% distinct() %>% dplyr::filter(!grepl("defined", name)) %>% dplyr::filter(!grepl("Other", name)) %>% dplyr::filter(!is.na(name)) %>% mutate(original_name = name)%>%  separate(name, c("code", "name"), sep= " - ", extra = "merge")  %>% dplyr::filter(!is.na(name))%>% mutate(id = 1:n())
+
+temp_ceramics_slip_position <- temp_ceramics_individual_raw %>% select(name = slip_position) %>% distinct() %>% dplyr::filter(!grepl("defined", name)) %>% dplyr::filter(!grepl("Other", name)) %>% dplyr::filter(!is.na(name)) %>% mutate(original_name = name)%>%  separate(name, c("code", "name"), sep= " - ", extra = "merge")  %>% dplyr::filter(!is.na(name)) %>% mutate(id = 1:n())
+
+temp_decoration <- temp_ceramics_individual_raw %>% 
+  select(decoration_1, decoration_2, decoration_3, decoration_4, decoration_5) %>%
+  gather(key="xxx", value="name", decoration_1, decoration_2, decoration_3, decoration_4, decoration_5) %>% 
+  select(-xxx) %>%
+  distinct() %>%
+  mutate(id = 1:n())
+
+temp_ceramics_to_decoration  <- temp_ceramics_individual_raw %>% 
+  select(id, decoration_1, decoration_2, decoration_3, decoration_4, decoration_5) %>%
+  gather(key="xxx", value="original_name", decoration_1, decoration_2, decoration_3, decoration_4, decoration_5) %>% 
+  select(-xxx) %>%
+  dplyr::filter(!is.na(original_name)) %>%
+  #dplyr::filter(!grepl("defined", original_name)) %>% 
+  #dplyr::filter(!grepl("Other", original_name)) %>% 
+  #separate(value, c("code", "name"), sep= " - ") %>% 
+  #dplyr::filter(as.numeric(code) < 1000) %>%
+  left_join(temp_decoration, by = c("original_name" = "name")) %>%
+  mutate(ceramics_individual_id = id.x, decoration_id = id.y)
+
+temp_ceramics_color <- temp_ceramics_individual_raw %>% select(color_inside, color_outside) %>% gather %>% select(-key) %>% dplyr::filter(!grepl("defined", value)) %>% dplyr::filter(!grepl("Other", value)) %>% distinct() %>% mutate(original_name = value) %>% dplyr::filter(!is.na(value)) %>% separate(value, c("code", "name"), sep= " - ", extra = "merge") %>% mutate(id = 1:n())
+
+temp_ceramics_surface_finishing <- temp_ceramics_individual_raw %>% select(surface_finishing_inside, surface_finishing_outside) %>% gather %>% select(-key) %>% dplyr::filter(!grepl("defined", value)) %>% dplyr::filter(!grepl("Other", value)) %>% distinct() %>% dplyr::filter(!is.na(value)) %>% mutate(original_name = value) %>%  separate(value, c("code", "name"), sep= " - ", extra = "merge") %>% mutate(id = 1:n())
+
+
+```
+
+
+```{r}
+# create flat file for compatibility with old database
+ceramics_individual_flat <- temp_ceramics_individual_raw %>%
+  mutate(vessel_shape = gsub("^0+", "", gsub(" - .*", "", vessel_shape))) %>%
+  mutate(wall_profile = gsub("^0+", "", gsub(" - .*", "", wall_profile))) %>%
+  mutate(lip_shape = gsub("^0+", "", gsub(" - .*", "", lip_shape))) %>%
+  mutate(rim_profile = gsub("^0+", "", gsub(" - .*", "", rim_profile))) %>%
+  mutate(color_inside = gsub("^0+", "", gsub(" - .*", "", color_inside))) %>%
+  mutate(color_outside = gsub("^0+", "", gsub(" - .*", "", color_outside))) %>%
+  mutate(surface_finishing_inside = gsub("^0+", "", gsub(" - .*", "", surface_finishing_inside))) %>%
+  mutate(surface_finishing_outside = gsub("^0+", "", gsub(" - .*", "", surface_finishing_outside))) %>%
+  mutate(firing_color = gsub("^0+", "", gsub(" - .*", "", firing_color))) %>%
+  mutate(slip_position = gsub("^0+", "", gsub(" - .*", "", slip_position))) %>%
+  mutate(decoration_1 = gsub("^0+", "", gsub(" - .*", "", decoration_1))) %>%
+  mutate(decoration_2 = gsub("^0+", "", gsub(" - .*", "", decoration_2)))%>%
+  mutate(decoration_3 = gsub("^0+", "", gsub(" - .*", "", decoration_3)))%>%
+  mutate(decoration_4 = gsub("^0+", "", gsub(" - .*", "", decoration_4)))%>%
+  mutate(decoration_5 = gsub("^0+", "", gsub(" - .*", "", decoration_5))) 
+ 
+ 
+
+```
+
+

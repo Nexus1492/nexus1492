@@ -1,0 +1,43 @@
+---
+title: "integrate_ornaments"
+output: html_document
+---
+
+
+```{r cars}
+
+temp_ca_ornaments_17 <- read_excel(paste0(source_directory, "finds_individual/ornaments/List Ornaments Carril 2017.xlsx")) %>%
+  clean_names("snake") %>%
+  mutate_all(as.character) %>%
+  mutate(site = "El Carril") %>%
+  rename(level_feature = level_feat, sub_type = subtype) %>%
+  select(-day)
+
+temp_fl_ornaments <- read_excel(paste0(source_directory, "finds_individual/ornaments/Ornament database El Flaco_complete.xlsx")) %>%
+  clean_names("snake") %>%
+  mutate_all(as.character) %>%
+  mutate(site= "El Flaco")
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r}
+
+flat_ornaments <- bind_rows(temp_fl_ornaments, temp_ca_ornaments_17) %>%
+  separate(z_s_sq, c("zone", "sector", "square")) %>%
+  separate(fnr, c("find_number", "object_number")) %>%
+  mutate(unit = gsub("[Uu]nit ?", "", unit)) %>%
+  mutate(level_feature = gsub("^F", "", level_feature)) %>%
+  mutate(level_feature = gsub("-0+", "-", level_feature))%>%
+  mutate(type = tolower(type)) %>%
+  mutate(sub_type = tolower(sub_type))  %>%
+  mutate(id = 1:n()) 
+
+
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

@@ -1,0 +1,53 @@
+---
+title: "integrate_stone_individual"
+output: html_document
+---
+
+```{r }
+temp_aag_stone_ind <- read_excel(paste0(source_directory, "finds_individual/stone/aag_stone.xlsx"), col_types = "text")  %>% 
+  normalize("Anse a la Gourde")
+  
+temp_aae_stone_ind <- read_excel(paste0(source_directory, "finds_individual/stone/aae_stone.xlsx"), col_types = "text")  %>% 
+  normalize("Anse a l'Eau")
+
+temp_coc_stone_ind <- read_excel(paste0(source_directory, "finds_individual/stone/coc_stone.xlsx"), trim_ws = TRUE, col_types = "text")  %>% 
+  normalize("Cocoyer St. Charles")
+
+temp_des_stone_ind <- read_excel(paste0(source_directory, "finds_individual/stone/des_stone.xlsx"), trim_ws = TRUE, col_types = "text")  %>% 
+  normalize("La Desirade")
+  
+temp_mor_stone_ind <- read_excel(paste0(source_directory, "finds_individual/stone/mor_stone.xlsx"), trim_ws = TRUE, col_types = "text")  %>% 
+  normalize("Morel")
+
+temp_sw215_stone_ind <- read_excel(paste0(source_directory, "finds_individual/stone/sw215_stone.xlsx"), trim_ws = TRUE, col_types = "text")  %>% 
+  normalize("Spaanse Water 215")
+
+temp_sw39_stone_ind <- read_excel(paste0(source_directory, "finds_individual/stone/sw39_stone.xlsx"), trim_ws = TRUE, col_types = "text")  %>% 
+  normalize("Spaanse Water 39")
+
+temp_sb_stone_ind <- read_excel(paste0(source_directory, "finds_individual/stone/sb_stone.xlsx"), trim_ws = TRUE, col_types = "text")  %>% 
+  normalize("Spring Bay")
+
+temp_stone_tom <- read_xlsx(paste0(source_directory, "finds_individual/stone/tom_breukel_artefact.xlsx")) %>%
+  clean_names("snake")
+
+
+```
+
+```{r}
+temp_stone_sebastian <- bind_rows(temp_aag_stone_ind, temp_aae_stone_ind, temp_coc_stone_ind, temp_des_stone_ind, temp_mor_stone_ind, temp_sw215_stone_ind, temp_sw39_stone_ind, temp_sb_stone_ind) %>%
+  rename(fnd = pn_number, object_number = individueel_nummer) %>%
+  na_if("0")  %>%
+  select(-usewear, -count, -phase_dissertation, -yvonne, -rmu) %>%
+  mutate(raw_material = gsub("[0-9]+ ([a-z ]+)", "\\1", raw_material))
+
+flat_stone_individual <- temp_stone_tom
+
+```
+
+
+```{r}
+flat_usewear <- read_xlsx(paste0(source_directory, "finds_individual/stone/tom_breukel_usewear.xlsx"))
+```
+
+

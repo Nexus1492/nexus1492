@@ -1,0 +1,80 @@
+---
+title: "crab"
+output: html_document
+---
+
+```{r, echo=FALSE}
+
+temp_ca_bone_gene_16_17_18 <- read_delim(paste0(source_directory, "finds/bone/ca_bone_16_17_18_added_missing.csv") , delim = ";", col_types = cols(.default = "c")) %>% 
+  normalize("El Carril") %>%
+  select(-row_no)
+
+temp_fl_bone_16_gene <- read_excel(paste0(source_directory, "finds/bone/fl_bone_16_gene.xlsx"), col_types = "text") %>% 
+  normalize("El Flaco") %>%
+  select(-contains("split_bone_new"))
+
+temp_fl_bone_15_gene_est <- read_delim(paste0(source_directory, "finds/bone/fl_bone_15_nisp_estimations.csv"), delim = ";") %>% 
+  normalize("El Flaco") %>%
+  select(-contains("split_bone_new")) %>%
+  rename(mammal_s_weight = small_mammal_weight, mammal_s_nisp = small_mammal_nisp)
+
+
+temp_fl_bone_14 <- read_excel(paste0(source_directory, "finds/bone/fl_bone_14.xlsx"), col_types = "text") %>% 
+  normalize("El Flaco")  
+
+temp_lp_bone <- read_excel(paste0(source_directory, "finds/bone/lp_bone.xlsx"), col_types = "text") %>% 
+  normalize("La Poterie")  
+
+temp_ll_bone <- read_excel(paste0(source_directory, "finds/bone/ll_bone_fauna.xlsx"), col_types = "text") %>% 
+  normalize("La Luperona")  
+
+temp_atr_bone <- read_excel(paste0(source_directory, "finds/bone/atr_bone.xlsx"), col_types = "text") %>% 
+  normalize("Anse Trabaud")  %>%
+  rename(total_weight = weight, fnd = find_number) %>%
+  mutate(fnd = as.character(fnd))
+
+temp_mor_bone <- read_excel(paste0(source_directory, "finds/mor_finds.xls")) %>%
+  normalize("Morel") %>%
+  dplyr::select(zone, sector, square, layer, contains("bone")) %>%
+  rename(total_weight =  bone_g, total_number = bone_n)
+
+temp_ec_bone <- read_excel(paste0(source_directory, "finds/ec_finds.xlsx")) %>%
+  mutate(site = "El Cabo") %>%
+  mutate_all(as.character) %>%
+  dplyr::filter(grepl("^BO", vondst_s_categorie)) %>%
+  mutate(remarks = coalesce(vondst_s_opmerking, vondst_v_opmerking)) %>%
+  select(fnd = vondstnr, type = vondst_s_categorie, total_weight = gewicht, total_number = aantal, remarks) %>%
+  mutate(fnd = as.character(fnd))
+
+temp_coc_bone <- read_excel(paste0(source_directory, "find_lists/coc_find_list.xls")) %>%
+  normalize("Cocoyer St. Charles") %>%
+  select(site, fnd = feature, contains("layer")) %>%
+  gather(layer, finds, contains("layer")) %>%
+  mutate(layer = gsub("layer_", "", layer)) %>%
+  dplyr::filter(grepl("bone", finds, ignore.case = TRUE)) %>%
+  select(-finds)
+
+temp_sb054b_bone <- read_excel(paste0(source_directory, "find_lists/SB054B_fauna_findlist.xlsx"), sheet = 2) %>%
+  normalize("SB054B") %>%
+  rename_(.dots=setNames(names(.), tolower(gsub("(.*)_.*", "total_\\1", names(.))))) %>%
+  mutate(total_weight = as.character(round(as.numeric(total_weight, 2)))) %>%
+  rename(fnd = findnumber, total_number = total_n) %>%
+  mutate(fnd = as.character(fnd)) %>%
+  dplyr::filter(!is.na(fnd)) %>%
+  dplyr::filter(grepl("(pisces)|(homo)|(aves),(sula)|(reptilia)|(bos)|(mammalia)", species, ignore.case=TRUE))
+
+
+```
+
+```{r}
+
+flat_bone <- bind_rows(temp_ec_bone, temp_ca_bone_gene_16_17_18,temp_fl_bone_16_gene, temp_fl_bone_14, temp_fl_bone_15_gene_est, temp_lp_bone, temp_ll_bone, temp_mor_bone, temp_atr_bone, temp_sb054b_bone) %>%
+mutate(material = "bone") %>%
+  gather(measurement, value, matches("(weight)|(mni)|(burnt)|(nisp)|(mni)|(total)|(number)")) %>%
+  mutate(measurement = gsub("total_", "", measurement))%>%
+  mutate(measurement = gsub("_((weight)|(mni)|(number))", "%\\1", measurement)) %>%
+  mutate(measurement = gsub("_(no_burnt)", "#\\1", measurement)) %>%
+  separate(measurement, c("species", "measurement"), sep="%") %>%
+  separate(species, c("species", "burnt"), sep="#") 
+
+```
