@@ -1,0 +1,66 @@
+lat,long,island,code_patrick,size
+26.466667,-77.083333,Great Abaco,,1
+24.433333,-77.95,North Andros,,1
+25.066667,-77.333333,South Andros,,1
+21.217778,-73.251389,Great Inagua Island,,1
+26.65,-78.316667,Grand Bahama,,1
+17.083333,-61.8,Antigua,ANT,1
+17.616667,-61.8,Barbuda,,1
+18.220554,-63.068615,Anguilla,,1
+12.183333,-69,Curacao,,1
+12.183333,-68.25,Bonaire,,1
+12.52111,-69.968338,Aruba,,1
+13.193887,-59.543198,Barbados,BAR,1
+32.321384,-64.75737,Bermuda,,1
+-16.290154,-63.588653,Bolivia,,2
+-14.235004,-51.92528,Brazil,,3
+25.03428,-77.39628,Bahamas,,2
+17.189877,-88.49765,Belize,,2
+-35.675147,-71.542969,Chile,,2
+4.570868,-74.297333,Colombia,,2
+9.748917,-83.753428,Costa Rica,,2
+21.521757,-77.781167,Cuba,,2
+15.414999,-61.370976,Dominica,,1
+18.735693,-70.162651,Dominican Republic,,2
+-1.831239,-78.183406,Ecuador,,2
+12.262776,-61.604171,Grenada,GRE,1
+3.933889,-53.125782,French Guiana,,2
+16.995971,-62.067641,Guadeloupe,,2
+15.783471,-90.230759,Guatemala,,2
+4.860416,-58.93018,Guyana,,2
+15.199999,-86.241905,Honduras,,2
+18.971187,-72.285215,Haiti,,2
+19,-71,Hispaniola,,2
+21.75,-82.85,Isla de la Juvendud,,1
+18.109581,-77.297508,Jamaica,,2
+17.357822,-62.782998,St Kitts,STK,1
+19.513469,-80.566956,Cayman Islands,,2
+13.909444,-60.978893,St Lucia,STL,1
+10.986944,-63.935556,Margarita,,1
+14.641528,-61.024174,Martinique,,1
+16.742498,-62.187366,Montserrat,,1
+17.15,-62.583333,Nevis,,1
+23.634501,-102.552784,Mexico,,2
+8.537981,-80.782127,Panama,,2
+-9.189967,-75.015152,Peru,,2
+18.220833,-66.590149,Puerto Rico,,2
+11.25,-60.667,Tobago,,1
+10.460556,-61.248611,Trinidad,TRI,2
+21.694025,-71.797928,Turks and Caicos Islands,,2
+13.25,-61.2,St Vincent,STV,2
+6.42375,-66.58973,Venezuela,,2
+18.420695,-64.639968,British Virgin Islands,,2
+18.335765,-64.896335,U.S. Virgin Islands,,2
+17.630556,-63.234722,Saba,SAB,1
+18.063333,-63.060278,St Martin,STM,1
+17.490278,-62.976667,St Eustatius,STE,1
+16.15,-61.666667,Basseterre (GUA),GUA,1
+15.199999,-86.241905,Central-American mainland,,3
+6.42375,-66.58973,South-American mainland,,3
+4,-53,French Guyana,,2
+21.983333,-79.033333,Greater Antilles,,2
+14.525556,-75.818333,Caribbean,,3
+13.25,-61.2,St Vincent and the Grenadines,,3
+14.233333,-61.35,Lesser Antilles,,2
+17.33,-62.666667,St Kitts and Nevis,,2
+17.05,-61.8,Antigua and Barbuda,,2
