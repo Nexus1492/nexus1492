@@ -22,7 +22,7 @@ class OptionPrompt(click.Option):
         return self.get_default(ctx)
 
 
-class Logging():
+class Logging:
     def __init__(self, log_level_std_out=2, log_level_file=0, log_file='converter.log'):
         self.log_level_std_out = log_level_std_out
         self.log_level_file = log_level_file

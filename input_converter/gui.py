@@ -171,8 +171,9 @@ class MyApp:
         if self.generate_conversion_var < 2:
             self.conversionData["findmapping"] = "./find_mapping.txt"
             self.conversionData["layermapping"] = "./layer_mapping.txt"
+            sep, _ = converter.find_separator(self.conversionData["layer"])
             with open(self.conversionData["layer"], "r", encoding=converter.extract_enc(self.conversionData["layer"])) as f:
-                header = csv.DictReader(f).fieldnames
+                header = csv.DictReader(f, delimiter=sep).fieldnames
             with open('layer_mapping.txt', "w") as f:
                 for col in header:
                     if col in cli.known_fields["layer"]:
@@ -180,8 +181,9 @@ class MyApp:
                     else:
                         f.write(col + "->#\n")
 
+            sep, _ = converter.find_separator(self.conversionData["find"])
             with open(self.conversionData["find"], "r", encoding=converter.extract_enc(self.conversionData["find"])) as f:
-                header = csv.DictReader(f).fieldnames
+                header = csv.DictReader(f, delimiter=sep).fieldnames
             with open('find_mapping.txt', "w") as f:
                 for col in header:
                     if col in cli.known_fields["find"]:
