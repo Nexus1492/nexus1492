@@ -11,7 +11,7 @@ import converter
 default_url = 'http://localhost:8888/get_data_converter_config/api.php?function=getConfig'
 state = {'use_defaults': False, 'config_url': default_url, 'convert_to_int': {'wall_thickness': 1, 'rim_diameter': 1, 'rim_percentage': 1}}
 known_layer = {"FND": "find_number", "site": "excavation_code", "unit": "unit", "zone": "zone", "sector": "sector", "square": "square", "layer": "layer", "feature": "feature", "body weight": "weights/Body", "body <50mm": "numbers/Body_lt", "body >50mm": "numbers/Body_gt", "rim weight": "weights/Rim", "rim <50mm": "numbers/Rim_lt", "rim >50mm": "numbers/Rim_gt", "base weight": "weights/Base", "base <50mm": "numbers/Base_lt", "base >50mm": "numbers/Base_gt", "griddle/other weight": "weights/Other", "griddle/other <50mm": "numbers/Other_lt", "griddle/other >50mm": "numbers/Other_gt", "polychrome painting": "counts/Polychrome", "broad-line incision": "counts/Broad", "mod anthrop": "counts/Anthropomorphic", "mod zoomop": "counts/Zoomorphic", "mod geom": "counts/Geometric", "punctation": "counts/Punctation", "finger indentation": "counts/Finger Indentation", "nubbin": "counts/Nubbin", "appliqué filet": "counts/Applique filet", "perforation": "counts/Perforation", "other": "counts/Other", "handle": "counts/Handle", "lug": "counts/Lug", "bodystamp": "counts/Body Stamp", "spindle whorl": "counts/Spindle whorl", "spout": "counts/Spout", "tool": "counts/Tool", "adorno": "counts/Adorno", "flat": "counts/Flat", "convex": "counts/Convex", "concave": "counts/Concave", "concave high": "counts/Concave high", "pedestal/annular": "counts/Pedestal annular", "straight": "counts/Straight", "triangular": "counts/Triangular", "overhanging": "counts/Overhanging", "rounded": "counts/Rounded", "legged": "counts/Legged", "white slip": "counts/White slip", "red slip": "counts/Red slip", "remarks": "remarks"}
-known_find = {"FND": "find_number ", "site": "excavation_code", "nr": "sherd_nr", "vsh": "attribute_values/Vessel shape", "wp": "attribute_values/Wall profile", "lsh": "attribute_values/Lip shape", "rpr": "attribute_values/Rim profile", "wth": "wall_thickness", "dm": "rim_diameter", "%": "rim_percentage", "dec": "attribute_values/Decoration", "clo": "attribute_values/Color outside", "cli": "attribute_values/Color inside", "fat": "attribute_values/Firing color", "sfo": "attribute_values/Surface finishing outside", "sfi": "attribute_values/Surface finishing inside", "slp": "attribute_values/Slip Position", "mnf": "#", "hrd": "#", "rem": "remarks"}
+known_find = {"FND": "find_number", "site": "excavation_code", "nr": "sherd_nr", "vsh": "attribute_values/Vessel shape", "wp": "attribute_values/Wall profile", "lsh": "attribute_values/Lip shape", "rpr": "attribute_values/Rim profile", "wth": "wall_thickness", "dm": "rim_diameter", "%": "rim_percentage", "dec": "attribute_values/Decoration", "clo": "attribute_values/Color outside", "cli": "attribute_values/Color inside", "fat": "attribute_values/Firing color", "sfo": "attribute_values/Surface finishing outside", "sfi": "attribute_values/Surface finishing inside", "slp": "attribute_values/Slip Position", "mnf": "#", "hrd": "#", "rem": "remarks"}
 known_fields = {'layer': known_layer, 'find': known_find}
 
 
@@ -101,6 +101,7 @@ def cli(url, use_local, logging_file, logging_stdout, update_local):
 @click.option('--separator', default=None, help='sets the separator for the CSV files')
 def create_mapping(layer, find, raise_errors, separator):
     """Creates mapping templates."""
+    # TODO use converter for this
     try:
         with open(layer, "r", encoding=converter.extract_enc(layer)) as f:
             header = csv.DictReader(f).fieldnames
@@ -149,7 +150,7 @@ def convert(layer, find, layermapping, findmapping, site, use_defaults, no_heade
         elif os.path.isfile(str(site) + '.zip') and not overwrite_output:
             state['logging'].log('Output file already exists. Use \'--overwrite_output\' to overwrite the existing file.', 2)
             exit(0)
-        converter.convert_data(layer, layermapping, find, findmapping, site, no_header, create_missing, state, separator)
+        converter.convert_data_old(layer, layermapping, find, findmapping, site, no_header, create_missing, state, separator)
         state['logging'].log('Done.', 2)
     except Exception as e:
         state['logging'].log("Something went wrong during the conversion. A " + str(sys.exc_info()[0].__name__) + " occurred:\n" + str(e), 2)
