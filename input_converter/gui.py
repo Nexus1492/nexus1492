@@ -1,4 +1,4 @@
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 from tkinter import ttk
 from tkinter import *
 import json
@@ -56,7 +56,23 @@ class MyApp:
 
         self.fd_title = ""
         self.file_handle = ""
-        self.conversionData = {'site_code': ''}
+
+        answer_redo = messagebox.askyesno("Data Converter", "Do you want to redo a previous conversion?")
+
+        if answer_redo:
+            self.redo_conversion = True
+            self.save_file = filedialog.askopenfilename(initialdir=".", title="Pick savefile", filetypes=[("converter savefile", "*.foo")])
+            with open(self.save_file, "r") as save_file:
+                self.conversionData = json.load(save_file)
+
+        else:
+            self.redo_conversion = False
+            self.save_file  = filedialog.asksaveasfilename(initialdir=".", title="Enter name for savefile",
+                                                    filetypes=[("converter savefile", "*.foo")],
+                                                    defaultextension='foo',
+                                                    initialfile="state_save")
+
+            self.conversionData = {'site_code': ''}
 
         self.myParent = parent
         Grid.rowconfigure(parent, 0, weight=1)
@@ -84,7 +100,7 @@ class MyApp:
         self.radio_nogen = Radiobutton(self.container, text="pick Mapping", variable=self.generate_conversion_var, value="no_gen")
 
         self.button_save = Button(self.container, text="Close the Converter")
-        self.button_save.bind("<Button-1>", MyApp.exit_converter)
+        self.button_save.bind("<Button-1>", self.exit_converter)
 
         self.button_next = Button(self.container, text="Next >")
         self.button_next.grid(row=2, column=3, sticky=SE, padx='15', pady='15')
@@ -163,6 +179,8 @@ class MyApp:
                              "find file", "find")
 
     def generate_conversion(self):
+        if self.redo_conversion:
+            return 'skip'
         self.radio_gen.grid(column=1, columnspan=1, row=2)
         self.radio_nogen.grid(column=2, columnspan=1, row=2)
 
@@ -204,7 +222,7 @@ class MyApp:
         self.label_guide_string.set('Summary:\n...')
 
     def convert_and_show_done(self):
-        filename = filedialog.asksaveasfilename(initialdir=".", title=self.file_handle, filetypes=(("zip files", "*.zip"), ("all files", "*.*")), defaultextension='zip')
+        filename = filedialog.asksaveasfilename(initialdir=".", title=self.file_handle, filetypes=(("zip files", "*.zip"), ("all files", "*.*")), defaultextension='zip', initialfile=self.conversionData['site_code'])
         if filename == "":
             self.back(None)
             return
@@ -291,8 +309,9 @@ class MyApp:
                 mapped = mapping[col] if mapping[col] is not None else '#'
                 f.write(col + "->" + str(mapped) + "\n")
 
-    @staticmethod
-    def exit_converter(event):
+    def exit_converter(self, event):
+        with open(self.save_file, 'w') as save_file:
+            json.dump(self.conversionData, save_file)
         report_event(event)
         exit(0)
 
@@ -300,7 +319,6 @@ class MyApp:
     def setup_mapping_editor(self, mapping, editor_mode):
         self.label_guide.grid_forget()
         self.editor_mode = editor_mode
-        print(mapping)
 
         self.editor_elements = []
         if self.editor_canvas:
