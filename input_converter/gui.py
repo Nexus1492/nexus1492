@@ -2,6 +2,7 @@ from tkinter import filedialog, messagebox
 from tkinter import ttk
 from tkinter import *
 import json
+import os.path
 import re
 
 import converter
@@ -27,6 +28,7 @@ class Logging:
 
 class MyApp:
     def __init__(self, parent):
+        self.myParent = parent
         self.state = {'use_defaults': False, 'config_url': default_url, 'convert_to_int': {'wall_thickness': 1, 'rim_diameter': 1, 'rim_percentage': 1}}
         with open('data.json', 'r') as infile:
             self.state['config'] = json.load(infile)
@@ -58,7 +60,6 @@ class MyApp:
         self.file_handle = ""
 
         answer_redo = messagebox.askyesno("Data Converter", "Do you want to redo a previous conversion?")
-
         if answer_redo:
             self.redo_conversion = True
             self.save_file = filedialog.askopenfilename(initialdir=".", title="Pick savefile", filetypes=[("converter savefile", "*.foo")])
@@ -74,7 +75,6 @@ class MyApp:
 
             self.conversionData = {'site_code': ''}
 
-        self.myParent = parent
         Grid.rowconfigure(parent, 0, weight=1)
         Grid.columnconfigure(parent, 0, weight=1)
 
@@ -223,6 +223,7 @@ class MyApp:
 
     def convert_and_show_done(self):
         filename = filedialog.asksaveasfilename(initialdir=".", title=self.file_handle, filetypes=(("zip files", "*.zip"), ("all files", "*.*")), defaultextension='zip', initialfile=self.conversionData['site_code'])
+
         if filename == "":
             self.back(None)
             return
@@ -283,11 +284,12 @@ class MyApp:
 
     # common helpers
     def pick_file(self, event):
-        report_event(event)
         filename = filedialog.askopenfilename(initialdir=".", title=self.file_handle, filetypes=self.file_types)
+
         if filename != "":
             self.conversionData[self.file_handle] = filename
             self.label_fp_string.set(filename)
+            self.label_fp.config(fg='black')
             self.button_next.config(state=NORMAL)
 
     def setup_pick_file(self, file_types, fp_string, fd_title, file_handle):
@@ -296,6 +298,11 @@ class MyApp:
         self.file_handle = file_handle
         if self.file_handle in self.conversionData and self.conversionData[self.file_handle]:
             self.label_fp_string.set(self.conversionData[self.file_handle])
+            if not os.path.isfile(self.conversionData[self.file_handle]):
+                self.button_next.config(state=DISABLED)
+                self.label_fp.config(fg='red')
+            else:
+                self.label_fp.config(fg='darkgreen')
         else:
             self.label_fp_string.set(fp_string)
             self.button_next.config(state=DISABLED)
