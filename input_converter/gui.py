@@ -139,6 +139,7 @@ class MyApp:
             self.button_next.config(state=DISABLED)
         if self.setup_wizard_step[self.currentStep]() == 'skip':
             self.next(None)
+        self.save_conversion_data()
 
     def back(self, _):
         if self.button_back['state'] == DISABLED:
@@ -150,6 +151,7 @@ class MyApp:
             self.button_back.config(state=DISABLED)
         if self.setup_wizard_step[self.currentStep]() == 'skip':
             self.back(None)
+        self.save_conversion_data()
 
     # setup , happens before showing step
     def setup_init(self):
@@ -218,9 +220,11 @@ class MyApp:
     def show_summary(self):
         self.button_pick.grid_forget()
         self.label_fp.grid_forget()
-
-        self.label_guide_string.set('Summary:\n' + str(self.conversionData).replace(',', '\n'))
-        self.label_guide_string.set('Summary:\n...')
+        summary_str = "Summary:\n"
+        summary_str += "Site code: " + self.conversionData['site_code'] + "\n"
+        summary_str += "Layer csv: " + self.conversionData['layer'] + "\n"
+        summary_str += "Find csv: " + self.conversionData['find']
+        self.label_guide_string.set(summary_str)
 
     def convert_and_show_done(self):
         filename = filedialog.asksaveasfilename(initialdir=".", title=self.file_handle, filetypes=(("zip files", "*.zip"), ("all files", "*.*")), defaultextension='zip', initialfile=self.conversionData['site_code'])
@@ -240,10 +244,19 @@ class MyApp:
         self.state['layer_sep'], _ = converter.find_separator(self.conversionData['layer'])
         self.state['find_sep'], _ = converter.find_separator(self.conversionData['find'])
 
-        converter.convert(self.state)
+        try:
+            warnings = converter.convert(self.state)
+        except:
+            warnings = {'success': False}
+        if warnings['success']:
+            lbl_str = "The conversion was successful.\nNumber of warnings during the conversion:\n"
+            lbl_str += "   - " + str(warnings['missing_front']) + " layer entries were missing\n"
+            lbl_str += "   - " + str(warnings['other_codes']) + " \"OTHER\" codes were found\n"
+            lbl_str += "   - " + str(warnings['missing_codebook_entry']) + " codes were not in the codebook"
+        else:
+            lbl_str = "Somethings went wrong. Please check the log file for more details."
 
-        self.label_guide_string.set("The conversion was successful.")
-
+        self.label_guide_string.set(lbl_str)
         self.button_next.config(state=DISABLED)
         self.button_save.grid(row=2, column=0, columnspan=4, rowspan=1, sticky=W+E+N+S, padx='50', pady='50')
 
@@ -284,6 +297,10 @@ class MyApp:
         self.button_next.config(state=NORMAL)
 
     # common helpers
+    def save_conversion_data(self):
+        with open(self.save_file, 'w') as save_file:
+            json.dump(self.conversionData, save_file)
+
     def pick_file(self, event):
         filename = filedialog.askopenfilename(initialdir=".", title=self.file_handle, filetypes=self.file_types)
 
@@ -298,12 +315,13 @@ class MyApp:
         self.fd_title = fd_title
         self.file_handle = file_handle
         if self.file_handle in self.conversionData and self.conversionData[self.file_handle]:
-            self.label_fp_string.set(self.conversionData[self.file_handle])
             if not os.path.isfile(self.conversionData[self.file_handle]):
                 self.button_next.config(state=DISABLED)
                 self.label_fp.config(fg='red')
+                self.label_fp_string.set(self.conversionData[self.file_handle] + "   " + u'\u2718')
             else:
                 self.label_fp.config(fg='darkgreen')
+                self.label_fp_string.set(self.conversionData[self.file_handle] + "   " + u'\u2714')
         else:
             self.label_fp_string.set(fp_string)
             self.button_next.config(state=DISABLED)
@@ -318,9 +336,6 @@ class MyApp:
                 f.write(col + "->" + str(mapped) + "\n")
 
     def exit_converter(self, event):
-        with open(self.save_file, 'w') as save_file:
-            json.dump(self.conversionData, save_file)
-        report_event(event)
         exit(0)
 
     # mapping editor
