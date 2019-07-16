@@ -1,6 +1,7 @@
 from tkinter import filedialog, messagebox
 from tkinter import ttk
 from tkinter import *
+from sys import exit
 import json
 import os.path
 import re
@@ -244,7 +245,7 @@ class MyApp:
         self.label_guide_string.set("The conversion was successful.")
 
         self.button_next.config(state=DISABLED)
-        self.button_save.grid(row=2, column=0, columnspan=4, rowspan=1, sticky=W+E+N+S, padx='15', pady='15')
+        self.button_save.grid(row=2, column=0, columnspan=4, rowspan=1, sticky=W+E+N+S, padx='50', pady='50')
 
     # reset, happens when leaving step
     def reset_no_reset(self): pass
