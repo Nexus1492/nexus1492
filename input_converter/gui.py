@@ -5,6 +5,7 @@ from sys import exit
 import json
 import os.path
 import re
+import requests
 
 import converter
 import cli
@@ -31,8 +32,12 @@ class MyApp:
     def __init__(self, parent):
         self.myParent = parent
         self.state = {'use_defaults': False, 'config_url': default_url, 'convert_to_int': {'wall_thickness': 1, 'rim_diameter': 1, 'rim_percentage': 1}}
-        with open('data.json', 'r') as infile:
-            self.state['config'] = json.load(infile)
+        if os.path.isfile('./data.json'):
+            with open('data.json', 'r') as infile:
+                self.state['config'] = json.load(infile)
+        else:
+            messagebox.showerror('data.json missing', 'The data.json file is missing. Please download a new version of this tool along with the data.json file from the CPMS.')
+            self.exit_converter(None)
         self.state['logging'] = Logging(2, 2)
 
         self.layer_combo = {}
@@ -59,19 +64,27 @@ class MyApp:
 
         self.fd_title = ""
         self.file_handle = ""
+        answer_update = messagebox.askyesno("Data Converter", "Do you want to update data.json? If changes to the codebook in the CPMS were made since the last update or download of this tool you need to do the update.")
+        if answer_update:
+            r = requests.get(self.state['config']['config_url'])
+            config = r.json()['data']
+            with open('data.json', 'w') as outfile:
+                json.dump(config, outfile, indent=4)
+            self.state['config'] = config
+
 
         answer_redo = messagebox.askyesno("Data Converter", "Do you want to redo a previous conversion?")
         if answer_redo:
             self.redo_conversion = True
-            self.save_file = filedialog.askopenfilename(initialdir=".", title="Pick savefile", filetypes=[("converter savefile", "*.foo")])
+            self.save_file = filedialog.askopenfilename(initialdir=".", title="Pick savefile", filetypes=[("converter savefile", "*.cpmssavefile")])
             with open(self.save_file, "r") as save_file:
                 self.conversionData = json.load(save_file)
 
         else:
             self.redo_conversion = False
             self.save_file  = filedialog.asksaveasfilename(initialdir=".", title="Enter name for savefile",
-                                                    filetypes=[("converter savefile", "*.foo")],
-                                                    defaultextension='foo',
+                                                    filetypes=[("converter savefile", "*.cpmssavefile")],
+                                                    defaultextension='cpmssavefile',
                                                     initialfile="state_save")
 
             self.conversionData = {'site_code': ''}
@@ -84,13 +97,13 @@ class MyApp:
 
         self.label_guide_string = StringVar()
 
-        self.label_guide = Label(self.container, bg="lightblue", textvariable=self.label_guide_string, justify=LEFT)
+        self.label_guide = Label(self.container, textvariable=self.label_guide_string, justify=LEFT)
 
         self.text_box_site_code = Entry(self.container, width=10, bg="orange")
 
         self.label_fp_string = StringVar()
 
-        self.label_fp = Label(self.container, bg="lightblue", textvariable=self.label_fp_string, justify=RIGHT)
+        self.label_fp = Label(self.container, textvariable=self.label_fp_string, justify=RIGHT)
 
         self.button_pick = Button(self.container, text="Pick File")
         self.button_pick.bind("<Button-1>", self.pick_file)
@@ -335,7 +348,7 @@ class MyApp:
                 mapped = mapping[col] if mapping[col] is not None else '#'
                 f.write(col + "->" + str(mapped) + "\n")
 
-    def exit_converter(self, event):
+    def exit_converter(self, _):
         exit(0)
 
     # mapping editor
@@ -349,7 +362,7 @@ class MyApp:
         self.editor_canvas = Canvas(self.container)
         self.scroll_y = Scrollbar(self.container, orient="vertical", command=self.editor_canvas.yview)
         self.editor_frame = Frame(self.editor_canvas)
-        self.editor_frame.configure(background='lightblue')
+
         for mapping_key, idx in zip(mapping, range(len(mapping))):
             mapping_item = [mapping_key] + mapping[mapping_key].split('/')
 
@@ -372,12 +385,14 @@ class MyApp:
             self.editor_elements.append((lbl, combo, combo2))
 
         self.editor_canvas.create_window(0, 0, anchor='nw', window=self.editor_frame)
-        self.editor_canvas.bind('<Configure>', lambda event: print(event))
 
         self.editor_frame.bind("<Configure>", lambda _: self.editor_canvas.configure(scrollregion=self.editor_canvas.bbox("all"), yscrollcommand=self.scroll_y.set))
 
+        # self.editor_canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+
         self.editor_canvas.grid(row=0, column=0, columnspan=4, rowspan=2, padx='5', pady='15', sticky=N+S+E+W)
         self.scroll_y.grid(row=0, column=3, rowspan=2, sticky=N+S+E, padx='5', pady='15')
+
 
     def get_mapping_from_editor(self):
         new_mapping = {}
